@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ ETHTornado__factory} from  "../types";
-import {verifier, poseidon} from "../const";
+import {verifier, poseidonAddr} from "../const";
 
 dotenv.config();
 async function main() {
@@ -20,7 +20,7 @@ async function main() {
         verifier,
         ETH_AMOUNT,
         HEIGHT,
-        poseidon
+        poseidonAddr
     );
     await (tornado).deployed();
     console.log(tornado.address);

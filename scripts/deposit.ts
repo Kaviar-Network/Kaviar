@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 // import { ethers } from "ethers";
 import {ethers} from "hardhat";
 //@ts-ignore
-import { poseidonContract, buildPoseidon } from "circomlibjs";
+import {poseidonContract, buildPoseidon } from "circomlibjs";
 import {ETHTornado__factory} from "../types";
 import { poseidonAddr, tornado } from "../const";
 
@@ -16,23 +16,19 @@ async function main() {
     const balanceBN = await signer.getBalance();
     const balance = Number(ethers.utils.formatEther(balanceBN));
     console.log(`Wallet balance ${balance}`);
-    const [userOldSigner, relayerSigner, userNewSigner] = await ethers.getSigners();
+
     const poseidon = await buildPoseidon();
     const deposit = Deposit.new(poseidon);
 
-    //setup the poseidon first
-    const poseidonContract =  getPoseidonFactory(2).connect(signer).attach(ethers.utils.getAddress(poseidonAddr));
-    const res = await poseidonContract["poseidon(uint256[2])"]([1, 2]);
-    const res2 = poseidon([1, 2]);
-
-    console.log(res.toString(), poseidon.F.toString(res2));
-    //console.log(poseidon);
-    const tornadoContract = new ETHTornado__factory(signer).attach(ethers.utils.getAddress(tornado));
+    
+    const tornadoContract = await new ETHTornado__factory(signer).attach(ethers.utils.getAddress(tornado));
+    console.log("signer:", signer)
+    console.log("Tornado:", tornadoContract)
     const ETH_AMOUNT = ethers.utils.parseEther("0.01");
     console.log("pass 1");
     const tx = await tornadoContract
-    .connect(userOldSigner)
-    .deposit(deposit.commitment, { value: ETH_AMOUNT });
+    .connect(signer)
+    .deposit(deposit.commitment, { value: ETH_AMOUNT,gasLimit:1000000 });
     const receipt = await tx.wait();
     const events = await tornadoContract.queryFilter(
         tornadoContract.filters.Deposit(),
@@ -42,6 +38,7 @@ async function main() {
 
     console.log(receipt);
     console.log(events);
+    console.log("Deposit gas cost", receipt.gasUsed.toNumber());
 }
 
 function poseidonHash(poseidon: any, inputs: any): string {

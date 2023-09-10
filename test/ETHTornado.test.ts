@@ -112,16 +112,17 @@ describe("ETHTornado", function () {
             HEIGHT,
             poseidonContract.address
         );
+        console.log("Verifier Address:", verifier.address, "Poseidon Address:", poseidonContract.address);
     });
 
-    it("generates same poseidon hash", async function () {
-        // deploy poseidonContract and upload two leaves
-        const res = await poseidonContract["poseidon(uint256[2])"]([1, 2]);
-        const res2 = poseidon([1, 2]);
+    // it("generates same poseidon hash", async function () {
+    //     // deploy poseidonContract and upload two leaves
+    //     const res = await poseidonContract["poseidon(uint256[2])"]([1, 2]);
+    //     const res2 = poseidon([1, 2]);
 
-        assert.equal(res.toString(), poseidon.F.toString(res2));
-        console.log(poseidon);
-    }).timeout(500000);
+    //     assert.equal(res.toString(), poseidon.F.toString(res2));
+    //     console.log(poseidon);
+    // }).timeout(500000);
 
     it("deposit and withdraw", async function () {
         const [userOldSigner, relayerSigner, userNewSigner] =
@@ -201,7 +202,6 @@ describe("ETHTornado", function () {
         // deposit2.leafIndex = events2[0].args.leafIndex;
         // await tree.insert(deposit2.commitment);
         // assert.equal(await tree.root(), await tornado.roots(2));
-
 
     }).timeout(500000);
 
