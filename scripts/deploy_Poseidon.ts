@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
+//@ts-ignore
 import { poseidonContract, buildPoseidon } from "circomlibjs";
 
 dotenv.config();
@@ -16,8 +17,11 @@ async function main() {
     // const verifier = await new Verifier__factory(signer).deploy();
     // await (verifier).deployed();
     // console.log(verifier.address);
+    let poseidon = await buildPoseidon();
     let poseidonContract: ethers.Contract;
     poseidonContract = await getPoseidonFactory(2).connect(signer).deploy();
+    await (poseidonContract).deployed();
+    console.log(poseidonContract.address);
 
 
 }
