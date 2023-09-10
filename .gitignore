@@ -1,6 +1,6 @@
 artifacts/
 cache/
 node_modules/
-build/
-types/
+
+
 .env
