@@ -1,0 +1,35 @@
+import * as dotenv from "dotenv";
+import { ethers } from "ethers";
+import { poseidonContract, buildPoseidon } from "circomlibjs";
+
+dotenv.config();
+async function main() {
+   
+    const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
+    const provider = ethers.providers.getDefaultProvider("goerli");
+    const signer = wallet.connect(provider);
+    const balanceBN = await signer.getBalance();
+    const balance = Number(ethers.utils.formatEther(balanceBN));
+    console.log(`Wallet balance ${balance}`);
+
+    
+    // const verifier = await new Verifier__factory(signer).deploy();
+    // await (verifier).deployed();
+    // console.log(verifier.address);
+    let poseidonContract: ethers.Contract;
+    poseidonContract = await getPoseidonFactory(2).connect(signer).deploy();
+
+
+}
+
+function getPoseidonFactory(nInputs: number) {
+  const bytecode = poseidonContract.createCode(nInputs);
+  const abiJson = poseidonContract.generateABI(nInputs);
+  const abi = new ethers.utils.Interface(abiJson);
+  return new ethers.ContractFactory(abi, bytecode);
+}
+
+main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
