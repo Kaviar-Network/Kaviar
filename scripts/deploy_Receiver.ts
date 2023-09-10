@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ Receiver__factory} from  "../types";
+import {verifier, poseidon} from "../const";
 
 dotenv.config();
 async function main() {
@@ -13,25 +14,23 @@ async function main() {
     console.log(`Wallet balance ${balance}`);
 
   
-    const verifierContract = "0x";
-    const  poseidonContract = "0x";
 
-    const gateway = "";
-    const gasservice = "";
+    const gateway = "0xe432150cce91c13a887f7D836923d5597adD8E31";
+    const gasservice = "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6";
     const ETH_AMOUNT = ethers.utils.parseEther("0.01");
     const HEIGHT = 20;
 
     const reveiver = await new Receiver__factory(signer).deploy(
         gateway,
         gasservice,
-        verifierContract,
+        verifier,
         ETH_AMOUNT,
         HEIGHT,
-        poseidonContract
+        poseidon
     );
   
     await (reveiver).deployed();
-    console.log(`SendMessage contract deployed to ${reveiver.address}`);
+    console.log(`Receiver contract deployed to ${reveiver.address}`);
 
 }
 

@@ -2,12 +2,13 @@ import * as dotenv from "dotenv";
 // import { ethers } from "ethers";
 import {ethers} from "hardhat";
 //@ts-ignore
-import { buildPoseidon } from "circomlibjs";
+import { poseidonContract, buildPoseidon } from "circomlibjs";
 import {ETHTornado__factory} from "../types";
-import { tornado } from "../const";
+import { poseidonAddr, tornado } from "../const";
 
 dotenv.config();
 async function main() {
+
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
     const provider = ethers.providers.getDefaultProvider("goerli");
@@ -18,6 +19,14 @@ async function main() {
     const [userOldSigner, relayerSigner, userNewSigner] = await ethers.getSigners();
     const poseidon = await buildPoseidon();
     const deposit = Deposit.new(poseidon);
+
+    //setup the poseidon first
+    const poseidonContract =  getPoseidonFactory(2).connect(signer).attach(ethers.utils.getAddress(poseidonAddr));
+    const res = await poseidonContract["poseidon(uint256[2])"]([1, 2]);
+    const res2 = poseidon([1, 2]);
+
+    console.log(res.toString(), poseidon.F.toString(res2));
+    //console.log(poseidon);
     const tornadoContract = new ETHTornado__factory(signer).attach(ethers.utils.getAddress(tornado));
     const ETH_AMOUNT = ethers.utils.parseEther("0.01");
     console.log("pass 1");
@@ -71,6 +80,13 @@ class Deposit {
         return poseidonHash(this.poseidon, [this.nullifier, 1, this.leafIndex]);
     }
 }
+
+function getPoseidonFactory(nInputs: number) {
+    const bytecode = poseidonContract.createCode(nInputs);
+    const abiJson = poseidonContract.generateABI(nInputs);
+    const abi = new ethers.utils.Interface(abiJson);
+    return new ethers.ContractFactory(abi, bytecode);
+  }
 
 main().catch((error) => {
     console.error(error);
