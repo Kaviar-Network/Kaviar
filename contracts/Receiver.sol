@@ -4,6 +4,7 @@ pragma solidity ^0.7.3;
 pragma experimental ABIEncoderV2;
 
 import "./MerkleTreeWithHistory.sol";
+import "./WETH.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
@@ -30,6 +31,8 @@ interface IVerifier {
 abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, ReentrancyGuard {
     uint256 public immutable denomination;
     IVerifier public immutable verifier;
+    WETH weth;
+    // To-Do: add WETH erc-20 token
 
     mapping(bytes32 => bool) public nullifierHashes;
 
@@ -59,10 +62,12 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
         uint256 _denomination,
         uint32 _merkleTreeHeight,
         address _hasher
-    ) MerkleTreeWithHistory(_merkleTreeHeight, _hasher) {
+    ) MerkleTreeWithHistory(_merkleTreeHeight, _hasher) AxelarExecutable(gateway_)  {
+        gasService = IAxelarGasService(gasReceiver_);
         require(_denomination > 0, "denomination should be greater than 0");
         verifier = _verifier;
         denomination = _denomination;
+        weth = new WETH("Wraped ETH","WETH", address(this));
     }
 
     /**
@@ -130,12 +135,19 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
         emit Withdrawal(_recipient, _nullifierHash, _relayer, _fee);
     }
 
-    /** @dev this function is defined in a child contract */
     function _processWithdraw(
         address payable _recipient,
         address payable _relayer,
         uint256 _fee
-    ) internal virtual;
+    ) internal override {
+        // sanity checks
+        require(
+            msg.value == 0,
+            "Message value is supposed to be zero for ETH instance"
+        );
+        //To-Do: change to mint token for the recipient
+        weth.mint(_recipient, denomination);
+    }
 
     function isSpent(bytes32 _nullifierHash) public view returns (bool) {
         return nullifierHashes[_nullifierHash];

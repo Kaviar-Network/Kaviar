@@ -25,8 +25,9 @@ abstract contract Sender is AxelarExecutable, ReentrancyGuard {
     @param _denomination transfer amount for each deposit
     @param _merkleTreeHeight the height of deposits' Merkle Tree
     */
-     constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
+     constructor(address gateway_, address gasReceiver_, uint256 _denomination ) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
+        denomination = _denomination;
     }
 
     /**
@@ -35,6 +36,7 @@ abstract contract Sender is AxelarExecutable, ReentrancyGuard {
   */
     function deposit(bytes32 _commitment, string calldata destinationChain,
         string calldata destinationAddress) external payable nonReentrant {
+        _processDeposit();
         // call gateway contract to send commitment
         // uint32 insertedIndex = _insert(_commitment);
        require(msg.value > 0, 'Gas payment is required');
@@ -50,7 +52,11 @@ abstract contract Sender is AxelarExecutable, ReentrancyGuard {
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
-    /** @dev this function is defined in a child contract */
-    function _processDeposit() internal virtual;
+    function _processDeposit() internal override {
+        require(
+            msg.value == denomination,
+            "Please send `mixDenomination` ETH along with transaction"
+        );
+    }
 
 }
