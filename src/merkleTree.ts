@@ -1,4 +1,36 @@
-import {JsStorage, LocalMerkleTree} from './localStorage';
+class JsStorage {
+    constructor(public db: { [key: string]: string } = {}) {}
+
+    get(key: string) {
+        return this.db[key];
+    }
+
+    get_or_element(key: string, defaultElement: string) {
+        const element = this.db[key];
+        if (element === undefined) {
+            return defaultElement;
+        } else {
+            return element;
+        }
+    }
+
+    put(key: string, value: string) {
+        if (key === undefined || value === undefined) {
+            throw Error("key or value is undefined");
+        }
+        this.db[key] = value;
+    }
+
+    del(key: string) {
+        delete this.db[key];
+    }
+
+    put_batch(key_values: { key: string; value: string }[]) {
+        key_values.forEach((element) => {
+            this.db[element.key] = element.value;
+        });
+    }
+}
 
 export interface Hasher {
     hash(left: string, right: string): string;
@@ -16,8 +48,7 @@ export class MerkleTree {
         public n_levels: number,
         public prefix: string,
         public hasher: Hasher,
-        // public storage = new JsStorage(),
-        public localMerkleTree = new LocalMerkleTree()
+        public storage = new JsStorage()
     ) {
         this.zero_values = [];
         this.totalElements = 0;
@@ -40,10 +71,10 @@ export class MerkleTree {
     }
 
     async root() {
-        let root = await this.localMerkleTree.getMerkleTreeOrDefault(
+        let root = await this.storage.get_or_element(
             MerkleTree.index_to_key(this.prefix, this.n_levels, 0),
             this.zero_values[this.n_levels]
-        )
+        );
 
         return root;
     }
@@ -54,8 +85,7 @@ export class MerkleTree {
             path_index: number[];
             constructor(
                 public prefix: string,
-                // public storage: JsStorage,
-                public localMerkleTree = new LocalMerkleTree(),
+                public storage: JsStorage,
                 public zero_values: string[]
             ) {
                 this.path_elements = [];
@@ -67,7 +97,7 @@ export class MerkleTree {
                 element_index: number,
                 sibling_index: number
             ) {
-                const sibling = await this.localMerkleTree.getMerkleTreeOrDefault(
+                const sibling = await this.storage.get_or_element(
                     MerkleTree.index_to_key(this.prefix, level, sibling_index),
                     this.zero_values[level]
                 );
@@ -78,15 +108,15 @@ export class MerkleTree {
         index = Number(index);
         let traverser = new PathTraverser(
             this.prefix,
-            this.localMerkleTree,
+            this.storage,
             this.zero_values
         );
-        const root = await this.localMerkleTree.getMerkleTreeOrDefault(
+        const root = await this.storage.get_or_element(
             MerkleTree.index_to_key(this.prefix, this.n_levels, 0),
             this.zero_values[this.n_levels]
         );
 
-        const element = await this.localMerkleTree.getMerkleTreeOrDefault(
+        const element = await this.storage.get_or_element(
             MerkleTree.index_to_key(this.prefix, 0, index),
             this.zero_values[0]
         );
@@ -112,7 +142,7 @@ export class MerkleTree {
                 original_element: string = "";
                 constructor(
                     public prefix: string,
-                    public localMerkleTree = new LocalMerkleTree(),
+                    public storage: JsStorage,
                     public hasher: Hasher,
                     public current_element: string,
                     public zero_values: string[]
@@ -127,7 +157,7 @@ export class MerkleTree {
                 ) {
                     if (level == 0) {
                         this.original_element =
-                            await this.localMerkleTree.getMerkleTreeOrDefault(
+                            await this.storage.get_or_element(
                                 MerkleTree.index_to_key(
                                     this.prefix,
                                     level,
@@ -136,7 +166,7 @@ export class MerkleTree {
                                 this.zero_values[level]
                             );
                     }
-                    const sibling = await this.localMerkleTree.getMerkleTreeOrDefault(
+                    const sibling = await this.storage.get_or_element(
                         MerkleTree.index_to_key(
                             this.prefix,
                             level,
@@ -166,7 +196,7 @@ export class MerkleTree {
             }
             let traverser = new UpdateTraverser(
                 this.prefix,
-                this.localMerkleTree,
+                this.storage,
                 this.hasher,
                 element,
                 this.zero_values
@@ -178,7 +208,7 @@ export class MerkleTree {
                 value: traverser.current_element,
             });
 
-            await this.localMerkleTree.setBatch(traverser.key_values_to_put);
+            await this.storage.put_batch(traverser.key_values_to_put);
         } catch (e) {
             console.error(e);
         }
@@ -206,7 +236,7 @@ export class MerkleTree {
 
     getIndexByElement(element: string) {
         for (let i = this.totalElements - 1; i >= 0; i--) {
-            const elementFromTree = this.localMerkleTree.get(
+            const elementFromTree = this.storage.get(
                 MerkleTree.index_to_key(this.prefix, 0, i)
             );
             if (elementFromTree === element) {

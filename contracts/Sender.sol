@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.3;
+pragma solidity 0.8.9;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
 
-abstract contract Sender is AxelarExecutable, ReentrancyGuard {
+contract Sender is AxelarExecutable, ReentrancyGuard {
     uint256 public immutable denomination;
-    
+    IAxelarGasService gasService;
 
     mapping(bytes32 => bool) public nullifierHashes;
 
@@ -21,9 +21,8 @@ abstract contract Sender is AxelarExecutable, ReentrancyGuard {
     );
    
     /**
-    @param _verifier the address of SNARK verifier for this contract
-    @param _denomination transfer amount for each deposit
-    @param _merkleTreeHeight the height of deposits' Merkle Tree
+    @param gateway_ the address of Axelar GateWay Contract
+    @param gasReceiver_ the address of Axelar GasService Contract
     */
      constructor(address gateway_, address gasReceiver_, uint256 _denomination ) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
@@ -52,7 +51,7 @@ abstract contract Sender is AxelarExecutable, ReentrancyGuard {
         gateway.callContract(destinationChain, destinationAddress, payload);
     }
 
-    function _processDeposit() internal override {
+    function _processDeposit() internal {
         require(
             msg.value == denomination,
             "Please send `mixDenomination` ETH along with transaction"

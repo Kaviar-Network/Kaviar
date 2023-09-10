@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.3;
+pragma solidity 0.8.9;
 pragma experimental ABIEncoderV2;
 
 import "./MerkleTreeWithHistory.sol";
 import "./WETH.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
 import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
@@ -28,10 +28,11 @@ interface IVerifier {
 
 
 
-abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, ReentrancyGuard {
+contract Receiver is AxelarExecutable, MerkleTreeWithHistory, ReentrancyGuard {
     uint256 public immutable denomination;
     IVerifier public immutable verifier;
-    WETH weth;
+    WETHToken public weth;
+    IAxelarGasService gasService;
     // To-Do: add WETH erc-20 token
 
     mapping(bytes32 => bool) public nullifierHashes;
@@ -67,13 +68,10 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
         require(_denomination > 0, "denomination should be greater than 0");
         verifier = _verifier;
         denomination = _denomination;
-        weth = new WETH("Wraped ETH","WETH", address(this));
+        weth = new WETHToken("Wraped ETH","WETH", address(this));
     }
 
-    /**
-    @dev Deposit funds into the contract. The caller must send (for ETH) or approve (for ERC20) value equal to or `denomination` of this instance.
-    @param _commitment the note commitment, which is PedersenHash(nullifier + secret)
-  */
+
    // move to sender later
    // Handles calls created by setAndSend. Updates this contract's value
     function _execute(
@@ -81,16 +79,12 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
         string calldata sourceAddress_,
         bytes calldata payload_
     ) internal override {
-        (commitment) = abi.decode(payload_, (bytes32));
-         uint32 insertedIndex = _insert(_commitment);
+        bytes32 commitment = abi.decode(payload_, (bytes32));
+         uint32 insertedIndex = _insert(commitment);
        // _processDeposit();
 
-        emit Deposit(_commitment, insertedIndex, block.timestamp);
-        sourceChain = sourceChain_;
-        sourceAddress = sourceAddress_;
+        emit Deposit(commitment, insertedIndex, block.timestamp);
     }
-    /** @dev this function is defined in a child contract */
-    function _processDeposit() internal virtual;
 
     /**
     @dev Withdraw a deposit from the contract. `proof` is a zkSNARK proof data, and input is an array of circuit public inputs
@@ -104,8 +98,8 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
         Proof calldata _proof,
         bytes32 _root,
         bytes32 _nullifierHash,
-        address payable _recipient,
-        address payable _relayer,
+        address  _recipient,
+        address  _relayer,
         uint256 _fee
     ) external payable nonReentrant {
         require(_fee <= denomination, "Fee exceeds transfer value");
@@ -122,8 +116,8 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
                 [
                     uint256(_root),
                     uint256(_nullifierHash),
-                    uint256(_recipient),
-                    uint256(_relayer),
+                    uint256(uint160(_recipient)),
+                    uint256(uint160(_relayer)),
                     _fee
                 ]
             ),
@@ -136,10 +130,10 @@ abstract contract Receiver is AxelarExecutable, MerkleTreeWithHistory, Reentranc
     }
 
     function _processWithdraw(
-        address payable _recipient,
-        address payable _relayer,
+        address  _recipient,
+        address  _relayer,
         uint256 _fee
-    ) internal override {
+    ) internal {
         // sanity checks
         require(
             msg.value == 0,

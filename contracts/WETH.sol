@@ -1,8 +1,9 @@
-pragma solidity ^0.7.3;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.9;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
-contract ChainHubToken is ERC20 {
+contract WETHToken is ERC20 {
 
 
     // ETH address of tss public key

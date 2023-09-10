@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.3;
+pragma solidity 0.8.9;
 pragma experimental ABIEncoderV2;
 
 import "./MerkleTreeWithHistory.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 struct Proof {
     uint256[2] a;
@@ -81,8 +81,8 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
         Proof calldata _proof,
         bytes32 _root,
         bytes32 _nullifierHash,
-        address payable _recipient,
-        address payable _relayer,
+        address _recipient,
+        address _relayer,
         uint256 _fee
     ) external payable nonReentrant {
         require(_fee <= denomination, "Fee exceeds transfer value");
@@ -99,8 +99,8 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
                 [
                     uint256(_root),
                     uint256(_nullifierHash),
-                    uint256(_recipient),
-                    uint256(_relayer),
+                    uint256(uint160(_recipient)),
+                    uint256(uint160(_relayer)),
                     _fee
                 ]
             ),
@@ -114,8 +114,8 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
 
     /** @dev this function is defined in a child contract */
     function _processWithdraw(
-        address payable _recipient,
-        address payable _relayer,
+        address _recipient,
+        address _relayer,
         uint256 _fee
     ) internal virtual;
 

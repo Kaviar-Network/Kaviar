@@ -17,7 +17,16 @@ const config: HardhatUserConfig = {
           timeout: 60000
         }
       },
-    solidity: "0.7.3",
+      solidity: {
+        compilers: [
+          {
+            version: "0.8.9"
+          },
+          {
+            version: "0.8.0"
+          }
+        ]
+      },
 };
 
 export default config;

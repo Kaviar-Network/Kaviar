@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.3;
+pragma solidity 0.8.9;
 pragma experimental ABIEncoderV2;
 
 import "./Tornado.sol";
@@ -19,10 +19,10 @@ contract ETHTornado is Tornado {
             "Please send `mixDenomination` ETH along with transaction"
         );
     }
-
+    
     function _processWithdraw(
-        address payable _recipient,
-        address payable _relayer,
+        address  _recipient,
+        address  _relayer,
         uint256 _fee
     ) internal override {
         // sanity checks
