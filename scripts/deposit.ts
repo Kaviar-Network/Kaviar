@@ -38,7 +38,13 @@ async function main() {
 
     console.log(receipt);
     console.log(events);
+    deposit.leafIndex = events[0].args.leafIndex;
     console.log("Deposit gas cost", receipt.gasUsed.toNumber());
+ 
+    console.log("nullifier: ", deposit.nullifier)
+    console.log("nullifierHash: ", deposit.nullifierHash)
+    console.log("leafIndex: ",deposit.leafIndex)
+    console.log("commitment: ",deposit.commitment)
 }
 
 function poseidonHash(poseidon: any, inputs: any): string {
