@@ -5,7 +5,7 @@
 ## Demo Video
 
 
-[![Kaviar](./video/page.png)](https://github.com/KunPengRen/ETH-Kaviar/blob/main/video/eth-sg-keptsecret.mp4)
+[![Kaviar](./video/page.png)](https://youtu.be/2emMlyGkbdo)
 
 
 ### Ethereum Singapore 2023 Hackathon
