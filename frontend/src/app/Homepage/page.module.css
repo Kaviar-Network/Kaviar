@@ -1,0 +1,16 @@
+.actionButtons {
+    display: 'flex';
+    flex-direction: 'column';
+    justify-content: 'center';
+    align-items: 'center';
+    margin-top: 30%;
+    max-width: 500px;
+}
+
+.homepage {
+    display: 'flex';
+    flex-direction: 'column';
+    justify-content: 'center';
+    align-items: 'center';
+}
+
