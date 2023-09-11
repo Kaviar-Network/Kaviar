@@ -1,13 +1,16 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ ETHTornado__factory} from  "../types";
-import {verifier, poseidonAddr} from "../const";
+import {tornado_verifier, tornado_poseidonAddr, goerliNet} from "../const";
 
 dotenv.config();
 async function main() {
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
-    const provider = ethers.providers.getDefaultProvider("goerli");
+    const provider = new ethers.providers.StaticJsonRpcProvider(
+        goerliNet.url,
+        goerliNet.chainId
+      );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
     const balance = Number(ethers.utils.formatEther(balanceBN));
@@ -17,10 +20,10 @@ async function main() {
     const HEIGHT = 20;
 
     const tornado = await new ETHTornado__factory(signer).deploy(
-        verifier,
+        tornado_verifier,
         ETH_AMOUNT,
         HEIGHT,
-        poseidonAddr
+        tornado_poseidonAddr
     );
     await (tornado).deployed();
     console.log(tornado.address);
