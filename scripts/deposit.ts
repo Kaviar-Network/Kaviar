@@ -24,7 +24,7 @@ async function main() {
     const tornadoContract = await new ETHTornado__factory(signer).attach(ethers.utils.getAddress(tornado));
     console.log("signer:", signer)
     console.log("Tornado:", tornadoContract)
-    const ETH_AMOUNT = ethers.utils.parseEther("0.01");
+    const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     console.log("pass 1");
     const tx = await tornadoContract
     .connect(signer)
@@ -35,14 +35,15 @@ async function main() {
         receipt.blockHash
     );
 
-
+    console.log("nullifier: ", deposit.nullifier)
+  
     console.log(receipt);
     console.log(events);
     deposit.leafIndex = events[0].args.leafIndex;
+    console.log("nullifierHash: ", deposit.nullifierHash)
     console.log("Deposit gas cost", receipt.gasUsed.toNumber());
  
-    console.log("nullifier: ", deposit.nullifier)
-    console.log("nullifierHash: ", deposit.nullifierHash)
+  
     console.log("leafIndex: ",deposit.leafIndex)
     console.log("commitment: ",deposit.commitment)
 }

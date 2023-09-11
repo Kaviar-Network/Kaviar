@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ Receiver__factory} from  "../types";
-import {verifier, poseidon} from "../const";
+import {verifier, poseidonAddr} from "../const";
 
 dotenv.config();
 async function main() {

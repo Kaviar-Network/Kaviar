@@ -13,19 +13,17 @@ import { groth16 } from "snarkjs";
 import path from "path";
 
 async function main(){
-    const relayerSignerWallet = new ethers.Wallet(process.env.relayerSigner ?? "");
+    const userOldSignerWallet = new ethers.Wallet(process.env.userOldSigner ?? "");
     const provider = ethers.providers.getDefaultProvider("goerli");
+    const userOldSigner = userOldSignerWallet.connect(provider);
+    const relayerSignerWallet = new ethers.Wallet(process.env.relayerSigner ?? "");
     const relayerSigner = relayerSignerWallet.connect(provider);
     const userNewSignerWallet = new ethers.Wallet(process.env.userNewSigner ?? "");
- 
     const userNewSigner = userNewSignerWallet.connect(provider);
-    // const balanceBN = await userOldSigner.getBalance();
-    // const balance = Number(ethers.utils.formatEther(balanceBN));
-    // console.log(`Wallet balance ${balance}`);
 
     const poseidon = await buildPoseidon();
-    const tornadoContract = new ETHTornado__factory(relayerSignerWallet).attach(ethers.utils.getAddress(tornado));
-    const ETH_AMOUNT = ethers.utils.parseEther("0.01");
+    const tornadoContract = new ETHTornado__factory(userOldSigner).attach(ethers.utils.getAddress(tornado));
+    const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     const HEIGHT = 20;
     console.log("pass 1");
     const tree = new MerkleTree(
@@ -35,16 +33,21 @@ async function main(){
     );
     // need get deposit create with nullifier
     // the old root
-    const nullifier = ""
-    const nullifierHash = ""
-    const leafIndex = 1
-    const commitment = ""
+    const nullifier = new Uint8Array([
+        203, 243, 239, 251, 111,
+         92, 115,  41,  88, 151,
+        227,  62, 210,  37, 130
+      ])
+    const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
+    const leafIndex = 0
+    const commitment = "0x055bf561f6b4b14fe502f622252856445019116ca7bfd09067612a45ea1481ce"
     console.log(tree);
-    console.log(await tree.root(), await tornadoContract.roots(0));
+    
+    //console.log(await tree.root(), await tornadoContract.roots(0));
     await tree.insert(commitment);
-    console.log(tree.totalElements, await tornadoContract.nextIndex());
-    // check the new root after deposit
-    console.log(await tree.root(), await tornadoContract.roots(1));
+    //console.log(tree.totalElements, await tornadoContract.nextIndex());
+    //check the new root after deposit
+   // console.log(await tree.root(), await tornadoContract.roots(1));
 
     const recipient = await userNewSigner.getAddress();
     const relayer = await relayerSigner.getAddress();
@@ -68,6 +71,7 @@ async function main(){
     };
 
     const solProof = await prove(witness);
+    console.log(solProof)
 
     const txWithdraw = await tornadoContract
         .connect(relayerSigner)

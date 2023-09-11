@@ -13,7 +13,7 @@ async function main() {
     const balance = Number(ethers.utils.formatEther(balanceBN));
     console.log(`Wallet balance ${balance}`);
 
-    const ETH_AMOUNT = ethers.utils.parseEther("0.01");
+    const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     const HEIGHT = 20;
 
     const tornado = await new ETHTornado__factory(signer).deploy(

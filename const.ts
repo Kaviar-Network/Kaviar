@@ -1,5 +1,5 @@
 export const verifier = "0x6013057C3D0c727df5B5824cA9CD01Ea9bc98DE6";
-export const poseidonAddr = "0xb47C3f4f98DDF82DC5e2Da560ae4Bd88e434E5A7";
-export const tornado = "0x5528157F43b7C563AF11a128F8c6D53BC5dFe765";
+export const poseidonAddr = "0x5A1093725592a5Fae4FF635105F6147f6c68675b";
+export const tornado = "0x88Dc222180a2e5c6C8aEca044Bb186B6557Bd765";
 export const sender = "0x5a505322204eE054F07E75B5067bf23533701732";
 export const receiver = "0x58b227b30F40D03534814F716350BA025c816a4E";
