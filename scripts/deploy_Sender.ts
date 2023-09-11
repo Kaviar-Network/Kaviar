@@ -19,7 +19,7 @@ async function main() {
     const gateway = "0x4D147dCb984e6affEEC47e44293DA442580A3Ec0";
     const gasservice = "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6";
 
-    const ETH_AMOUNT = ethers.utils.parseEther("0.01");
+    const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     
     
     const verifier = await new Sender__factory(signer).deploy(
