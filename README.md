@@ -1,19 +1,22 @@
 # Tornado Cash but with Poseidon Hash
 
-[![Node.js CI](https://github.com/ChihChengLiang/poseidon-tornado/actions/workflows/node.js.yml/badge.svg)](https://github.com/ChihChengLiang/poseidon-tornado/actions/workflows/node.js.yml)
+## Cross-Chain Compliant Currency-Mixer
 
-WARNING: This project is unaudited, please don't use in the production.
-
-We copy and modify the [Tornado Cash](https://github.com/tornadocash/tornado-core) and implement the optimization suggestions in the a Tornado [audit report](https://tornado.cash/audits/TornadoCash_cryptographic_review_ABDK.pdf).
+### Ethereum Singapore 2023 Hackathon
+We create a cross-chain compliant currency-mixer based on the paper [Blockchain Privacy and Regulatory Compliance: Towards a Practical Equilibrium](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) by Buterin et al. 2023.
 
 Specifically we
 
 - Use Poseidon Hash for tree hashing, nullifier hashing, and commitment construction
-- Use the following suggested construction to allow nullifier reuse
 
 ```
 commitment = PoseidonHash(nullifier, 0)
 nullifierHash = PoseidonHash(nullifier, 1, leafIndex)
+```
+
+- Use [Privacy Pools](https://github.com/ameensol/privacy-pools) to block blacklisted actors from using the protocol.
+
+- Use [Axelar](https://github.com/axelarnetwork/axelar-core) to bridge assets between two chains.
 ```
 
 ## Build
@@ -28,12 +31,12 @@ npm install
 npm run build
 ```
 
-```sh
-npm run test
-```
+## Run
 
-## Benchmark
+``sh
+# run frontend
+cd frontend && npm install && npm run dev
 
-```sh
-npm run info
-```
+# run backend
+cd backend && yarn install && yarn run dev
+``
