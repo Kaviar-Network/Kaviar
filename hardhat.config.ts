@@ -17,7 +17,7 @@ const config: HardhatUserConfig = {
           timeout: 60000
         },
         bsc: {
-          url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+          url: "https://bsc-testnet.publicnode.com",
           chainId: 97,
           accounts: [`${userOldSigner}`, `0x${relayerSigner}`, `0x${userNewSigner}`],
           gas:10000000,

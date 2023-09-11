@@ -1,13 +1,16 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ Receiver__factory} from  "../types";
-import {verifier, poseidonAddr} from "../const";
+import {verifier, poseidonAddr, mantleNet} from "../const";
 
 dotenv.config();
 async function main() {
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
-    const provider = ethers.providers.getDefaultProvider("goerli");
+    const provider = new ethers.providers.StaticJsonRpcProvider(
+        mantleNet.url,
+        mantleNet.chainId
+      );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
     const balance = Number(ethers.utils.formatEther(balanceBN));
@@ -15,14 +18,13 @@ async function main() {
 
   
 
-    const gateway = "0xe432150cce91c13a887f7D836923d5597adD8E31";
-    const gasservice = "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6";
+   
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     const HEIGHT = 20;
 
     const reveiver = await new Receiver__factory(signer).deploy(
-        gateway,
-        gasservice,
+        mantleNet.gateway,
+        mantleNet.gasservice,
         verifier,
         ETH_AMOUNT,
         HEIGHT,

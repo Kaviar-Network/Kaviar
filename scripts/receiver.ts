@@ -5,7 +5,7 @@ import { Contract, ContractFactory, BigNumber, BigNumberish } from "ethers";
 //@ts-ignore
 import { poseidonContract, buildPoseidon } from "circomlibjs";
 import {Receiver__factory} from "../types";
-import { poseidonAddr, receiver } from "../const";
+import { mantleNet, poseidonAddr, receiver } from "../const";
 // @ts-ignore
 import { MerkleTree, Hasher } from "../src/merkleTree";
 // @ts-ignore
@@ -14,7 +14,10 @@ import path from "path";
 
 async function main(){
     const userOldSignerWallet = new ethers.Wallet(process.env.userOldSigner ?? "");
-    const provider = ethers.providers.getDefaultProvider("goerli");
+    const provider = new ethers.providers.StaticJsonRpcProvider(
+        mantleNet.url,
+        mantleNet.chainId
+      );
     const userOldSigner = userOldSignerWallet.connect(provider);
     const relayerSignerWallet = new ethers.Wallet(process.env.relayerSigner ?? "");
     const relayerSigner = relayerSignerWallet.connect(provider);
@@ -34,14 +37,14 @@ async function main(){
     // need get deposit create with nullifier
     // the old root
     const nullifier = new Uint8Array([
-        213, 164,  19,   3, 153, 49,
-        208,  67, 138, 211,  32, 18,
-         85,  79,  32
+        185, 151, 137, 236, 179,
+         20, 171,  54, 167, 166,
+        185, 147,  95,   9, 141
       ])
    // const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
     const leafIndex = 0
     const nullifierHash = poseidonHash(poseidon, [nullifier, 1, leafIndex])
-    const commitment = "0x2AECACE2E437215C6811AD5A53BF22B2D22F59AC762CA939FD15280FBD6C168C"
+    const commitment = "0x131d05841a55fe138852b423e66d766620a71c1b259254bea564839fb99e3f27"
     console.log(tree);
     
     //console.log(await tree.root(), await tornadoContract.roots(0));

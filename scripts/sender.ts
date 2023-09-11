@@ -4,17 +4,16 @@ import {ethers} from "hardhat";
 //@ts-ignore
 import {poseidonContract, buildPoseidon } from "circomlibjs";
 import {Sender__factory} from "../types";
-import { sender,receiver} from "../const";
+import { sender,receiver, mantleNet, bscNet} from "../const";
 
 dotenv.config();
 async function main() {
 
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "")
-    const url = "https://bsc-testnet.publicnode.com"
     const provider = new ethers.providers.StaticJsonRpcProvider(
-        url,
-        97
+        bscNet.url,
+        bscNet.chainId
       );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
@@ -34,7 +33,7 @@ async function main() {
     console.log("pass 1");
     const tx = await senderContract
     .connect(signer)
-    .deposit(deposit.commitment,"ethereum-2" ,receiver , { value: TOTAL_VALUE, gasLimit:1000000 });
+    .deposit(deposit.commitment, mantleNet.name, receiver, { value: TOTAL_VALUE, gasLimit:1000000 });
     const receipt = await tx.wait();
     const events = await senderContract.queryFilter(
         senderContract.filters.Deposit(),
