@@ -127,7 +127,7 @@ describe("ETHTornado", function () {
     it("deposit and withdraw", async function () {
         const [userOldSigner, relayerSigner, userNewSigner] =
             await ethers.getSigners();
-        const deposit = Deposit.new(poseidon);
+        let deposit = Deposit.new(poseidon);
         //deposit 
         //parameters: nullifier hash and amount
         const tx = await tornado
@@ -162,7 +162,7 @@ describe("ETHTornado", function () {
         const relayer = await relayerSigner.getAddress();
         const fee = 0;
 
-        const { root, path_elements, path_index } = await tree.path(
+        var { root, path_elements, path_index } = await tree.path(
             deposit.leafIndex
         );
 
@@ -187,21 +187,51 @@ describe("ETHTornado", function () {
         const receiptWithdraw = await txWithdraw.wait();
         console.log("Withdraw gas cost", receiptWithdraw.gasUsed.toNumber());
         // second deposit 
-        // const deposit2 = Deposit.new(poseidon);
-        // const tx2 = await tornado
-        //     .connect(userOldSigner)
-        //     .deposit(deposit.commitment, { value: ETH_AMOUNT });
-        // const receipt2 = await tx2.wait();
-        // const events2 = await tornado.queryFilter(
-        //     tornado.filters.Deposit(),
-        //     receipt2.blockHash
-        // );
-        // assert.equal(events2[0].args.commitment, deposit2.commitment);
-        // console.log("Deposit gas cost", receipt2.gasUsed.toNumber());
-        // // leafIndex return from event
-        // deposit2.leafIndex = events2[0].args.leafIndex;
-        // await tree.insert(deposit2.commitment);
-        // assert.equal(await tree.root(), await tornado.roots(2));
+        const deposit2 = Deposit.new(poseidon);
+        const tx2 = await tornado
+            .connect(userOldSigner)
+            .deposit(deposit2.commitment, { value: ETH_AMOUNT });
+        const receipt2 = await tx2.wait();
+        const events2 = await tornado.queryFilter(
+            tornado.filters.Deposit(),
+            receipt2.blockHash
+        );
+        assert.equal(events2[0].args.commitment, deposit2.commitment);
+        console.log("Deposit gas cost", receipt2.gasUsed.toNumber());
+        // leafIndex return from event
+        deposit2.leafIndex = events2[0].args.leafIndex;
+        await tree.insert(deposit2.commitment);
+        assert.equal(await tree.root(), await tornado.roots(2));
+        const nullifierHash2 = deposit2.nullifierHash;
+        console.log(deposit2.leafIndex)
+ 
+
+        const { root: root2, path_elements: path_elements2, path_index: path_index2 } = await tree.path(
+            deposit2.leafIndex
+        );
+
+        const witness2 = {
+            // Public
+            root: root2,
+            nullifierHash: nullifierHash2,
+            recipient,
+            relayer,
+            fee,
+            // Private (user keep)
+            nullifier: BigNumber.from(deposit2.nullifier).toBigInt(),
+            pathElements: path_elements2,
+            pathIndices: path_index2,
+        };
+
+        const solProof2 = await prove(witness2);
+
+        const txWithdraw2 = await tornado
+            .connect(relayerSigner)
+            .withdraw(solProof2, root2, nullifierHash2, recipient, relayer, fee,{ gasLimit:1000000});
+        const receiptWithdraw2 = await txWithdraw2.wait();
+        console.log("Withdraw gas cost", receiptWithdraw2.gasUsed.toNumber());
+
+
 
     }).timeout(500000);
 
