@@ -4,7 +4,7 @@ import {ethers} from "hardhat";
 //@ts-ignore
 import {poseidonContract, buildPoseidon } from "circomlibjs";
 import {Sender__factory} from "../types";
-import { sender} from "../const";
+import { sender,receiver} from "../const";
 
 dotenv.config();
 async function main() {
@@ -27,12 +27,14 @@ async function main() {
     
     const senderContract = await new Sender__factory(signer).attach(ethers.utils.getAddress(sender));
     console.log("signer:", signer)
-    console.log("Sender:", senderContract)
+    // console.log("Sender:", senderContract)
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
+    const AXELAR_GAS = ethers.utils.parseEther("0.001");
+    const TOTAL_VALUE = ethers.utils.parseEther("0.002");
     console.log("pass 1");
     const tx = await senderContract
     .connect(signer)
-    .deposit(deposit.commitment,"ethereum-2" ,"0x0971f8246D5b30e3d262F0A2eCD3Ba676400bf75" , { value: ETH_AMOUNT,gasLimit:1000000 });
+    .deposit(deposit.commitment,"ethereum-2" ,receiver , { value: TOTAL_VALUE, gasLimit:1000000 });
     const receipt = await tx.wait();
     const events = await senderContract.queryFilter(
         senderContract.filters.Deposit(),
@@ -43,13 +45,13 @@ async function main() {
   
     console.log(receipt);
     console.log(events);
-    deposit.leafIndex = events[0].args.leafIndex;
-    console.log("nullifierHash: ", deposit.nullifierHash)
-    console.log("Deposit gas cost", receipt.gasUsed.toNumber());
+    // deposit.leafIndex = events[0].args.leafIndex;
+    // console.log("nullifierHash: ", deposit.nullifierHash)
+    // console.log("Deposit gas cost", receipt.gasUsed.toNumber());
  
   
-    console.log("leafIndex: ",deposit.leafIndex)
-    console.log("commitment: ",deposit.commitment)
+    // console.log("leafIndex: ",deposit.leafIndex)
+    // console.log("commitment: ",deposit.commitment)
 }
 
 function poseidonHash(poseidon: any, inputs: any): string {

@@ -10,6 +10,7 @@ import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contr
 
 contract Sender is AxelarExecutable, ReentrancyGuard {
     uint256 public immutable denomination;
+    uint256 public axelarGas;
     IAxelarGasService gasService;
 
     mapping(bytes32 => bool) public nullifierHashes;
@@ -24,9 +25,11 @@ contract Sender is AxelarExecutable, ReentrancyGuard {
     @param gateway_ the address of Axelar GateWay Contract
     @param gasReceiver_ the address of Axelar GasService Contract
     */
-     constructor(address gateway_, address gasReceiver_, uint256 _denomination ) AxelarExecutable(gateway_) {
+     constructor(address gateway_, address gasReceiver_, uint256 _denomination, uint256 _axelarGas ) AxelarExecutable(gateway_) {
         gasService = IAxelarGasService(gasReceiver_);
         denomination = _denomination;
+        axelarGas = _axelarGas;
+
     }
 
     /**
@@ -41,7 +44,7 @@ contract Sender is AxelarExecutable, ReentrancyGuard {
        require(msg.value > 0, 'Gas payment is required');
 
         bytes memory payload = abi.encode(_commitment);
-        gasService.payNativeGasForContractCall{ value: msg.value }(
+        gasService.payNativeGasForContractCall{ value: axelarGas }(
             address(this),
             destinationChain,
             destinationAddress,
@@ -53,7 +56,7 @@ contract Sender is AxelarExecutable, ReentrancyGuard {
 
     function _processDeposit() internal {
         require(
-            msg.value == denomination,
+            (msg.value - axelarGas) == denomination,
             "Please send `mixDenomination` ETH along with transaction"
         );
     }

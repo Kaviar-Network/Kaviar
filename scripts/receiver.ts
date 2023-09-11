@@ -34,14 +34,14 @@ async function main(){
     // need get deposit create with nullifier
     // the old root
     const nullifier = new Uint8Array([
-        104, 133,  65,  90, 179,
-        118, 120, 238, 148, 145,
-        242,  61,  85,  19,  89
+        213, 164,  19,   3, 153, 49,
+        208,  67, 138, 211,  32, 18,
+         85,  79,  32
       ])
    // const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
     const leafIndex = 0
     const nullifierHash = poseidonHash(poseidon, [nullifier, 1, leafIndex])
-    const commitment = "0x083CA8E809250EA0711294EB514D1B2D0DDA2A35F922F84B06129D130EEB5D63"
+    const commitment = "0x2AECACE2E437215C6811AD5A53BF22B2D22F59AC762CA939FD15280FBD6C168C"
     console.log(tree);
     
     //console.log(await tree.root(), await tornadoContract.roots(0));

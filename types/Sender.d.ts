@@ -22,6 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface SenderInterface extends ethers.utils.Interface {
   functions: {
+    "axelarGas()": FunctionFragment;
     "denomination()": FunctionFragment;
     "deposit(bytes32,string,string)": FunctionFragment;
     "execute(bytes32,string,string,bytes)": FunctionFragment;
@@ -30,6 +31,7 @@ interface SenderInterface extends ethers.utils.Interface {
     "nullifierHashes(bytes32)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "axelarGas", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "denomination",
     values?: undefined
@@ -52,6 +54,7 @@ interface SenderInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
 
+  decodeFunctionResult(functionFragment: "axelarGas", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "denomination",
     data: BytesLike
@@ -127,6 +130,8 @@ export class Sender extends BaseContract {
   interface: SenderInterface;
 
   functions: {
+    axelarGas(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     denomination(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     deposit(
@@ -162,6 +167,8 @@ export class Sender extends BaseContract {
     ): Promise<[boolean]>;
   };
 
+  axelarGas(overrides?: CallOverrides): Promise<BigNumber>;
+
   denomination(overrides?: CallOverrides): Promise<BigNumber>;
 
   deposit(
@@ -194,6 +201,8 @@ export class Sender extends BaseContract {
   nullifierHashes(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    axelarGas(overrides?: CallOverrides): Promise<BigNumber>;
+
     denomination(overrides?: CallOverrides): Promise<BigNumber>;
 
     deposit(
@@ -250,6 +259,8 @@ export class Sender extends BaseContract {
   };
 
   estimateGas: {
+    axelarGas(overrides?: CallOverrides): Promise<BigNumber>;
+
     denomination(overrides?: CallOverrides): Promise<BigNumber>;
 
     deposit(
@@ -286,6 +297,8 @@ export class Sender extends BaseContract {
   };
 
   populateTransaction: {
+    axelarGas(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     denomination(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     deposit(
