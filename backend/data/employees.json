@@ -1,0 +1,16 @@
+[
+    {
+        "empID": 1,
+        "empName": "Jane",
+        "empLName": "Doe",
+        "employer": "McDonalds HongKong",
+        "countryId": 1
+    },
+    {
+        "empID": 2,
+        "empName": "Jack",
+        "empLName": "Doe",
+        "employer": "McDonalds Malaysia",
+        "countryId": 2
+    }
+]

@@ -4,8 +4,8 @@ import {ethers} from "hardhat";
 import { Contract, ContractFactory, BigNumber, BigNumberish } from "ethers";
 //@ts-ignore
 import { poseidonContract, buildPoseidon } from "circomlibjs";
-import {ETHTornado__factory} from "../types";
-import { poseidonAddr, tornado } from "../const";
+import {Receiver__factory} from "../types";
+import { mantleNet, poseidonAddr, receiver } from "../const";
 // @ts-ignore
 import { MerkleTree, Hasher } from "../src/merkleTree";
 // @ts-ignore
@@ -13,16 +13,19 @@ import { groth16 } from "snarkjs";
 import path from "path";
 
 async function main(){
-    const userOldSignerWallet = new ethers.Wallet(process.env.userOldSigner ?? "");
-    const provider = ethers.providers.getDefaultProvider("goerli");
-    const userOldSigner = userOldSignerWallet.connect(provider);
-    const relayerSignerWallet = new ethers.Wallet(process.env.relayerSigner ?? "");
-    const relayerSigner = relayerSignerWallet.connect(provider);
-    const userNewSignerWallet = new ethers.Wallet(process.env.userNewSigner ?? "");
-    const userNewSigner = userNewSignerWallet.connect(provider);
+    // const userOldSignerWallet = new ethers.Wallet(process.env.userOldSigner ?? "");
+    // const provider = new ethers.providers.StaticJsonRpcProvider(
+    //     mantleNet.url,
+    //     mantleNet.chainId
+    //   );
+    // const userOldSigner = userOldSignerWallet.connect(provider);
+    // const relayerSignerWallet = new ethers.Wallet(process.env.relayerSigner ?? "");
+    // const relayerSigner = relayerSignerWallet.connect(provider);
+    // const userNewSignerWallet = new ethers.Wallet(process.env.userNewSigner ?? "");
+    // const userNewSigner = userNewSignerWallet.connect(provider);
 
-    const poseidon = await buildPoseidon();
-    const tornadoContract = new ETHTornado__factory(userOldSigner).attach(ethers.utils.getAddress(tornado));
+    // const poseidon = await buildPoseidon();
+    // const receiverContract = new Receiver__factory(userOldSigner).attach(ethers.utils.getAddress(receiver));
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     const HEIGHT = 20;
     console.log("pass 1");
@@ -34,13 +37,14 @@ async function main(){
     // need get deposit create with nullifier
     // the old root
     const nullifier = new Uint8Array([
-        86, 194, 106, 82,  56,
-       214,  21, 157, 77,  30,
-       222,  71, 170, 62, 163
+        14, 254,   9, 120,   1,
+       163, 132, 192, 220, 124,
+        31, 155,  28,  87, 253
      ])
-    const nullifierHash = "0x18bf66d22c4afbcdeb8ed2b6380bf684b890ede292feea2313e421c381ad8774"
+   // const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
     const leafIndex = 0
-    const commitment = "0x2a8844508de265efc586a3314480ae15cd3cb99b94c6ad3895e034a8d2585143"
+    const nullifierHash = poseidonHash(poseidon, [nullifier, 1, leafIndex])
+    const commitment = "0x131d05841a55fe138852b423e66d766620a71c1b259254bea564839fb99e3f27"
     console.log(tree);
     
     //console.log(await tree.root(), await tornadoContract.roots(0));
@@ -48,7 +52,6 @@ async function main(){
     //console.log(tree.totalElements, await tornadoContract.nextIndex());
     //check the new root after deposit
    // console.log(await tree.root(), await tornadoContract.roots(1));
-    
 
     const recipient = await userNewSigner.getAddress();
     const relayer = await relayerSigner.getAddress();
@@ -71,15 +74,14 @@ async function main(){
         pathIndices: path_index,
     };
 
-    console.log(witness)
     const solProof = await prove(witness);
     console.log(solProof)
 
-    // const txWithdraw = await tornadoContract
-    // .connect(relayerSigner)
-    // .withdraw(solProof, root, nullifierHash, recipient, relayer, fee);
-    // const receiptWithdraw = await txWithdraw.wait();
-    // console.log("Withdraw gas cost", receiptWithdraw.gasUsed.toNumber()); 
+    const txWithdraw = await receiverContract
+        .connect(relayerSigner)
+        .withdraw(solProof, root, nullifierHash, recipient, relayer, fee);
+    const receiptWithdraw = await txWithdraw.wait();
+    console.log("Withdraw gas cost", receiptWithdraw.gasUsed.toNumber()); 
 
 }
 

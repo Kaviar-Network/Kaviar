@@ -1,54 +1,35 @@
-class GenericStorage {
-  constructor(getStorage = () => window.localStorage) {
-    this.storage = getStorage();
+export class JsStorage {
+  constructor(db = {}) {
+    this.db = db;
   }
 
   get(key) {
-    return this.storage.getItem(key);
+    return this.db[key];
   }
 
-  set(key, value) {
-    this.storage.setItem(key, value);
-  }
-
-  clearItem(key) {
-    this.storage.removeItem(key);
-  }
-
-  clearItems(keys) {
-    keys.forEach((key) => this.clearItem(key));
-  }
-}
-
-export class LocalMerkleTree extends GenericStorage {
-  constructor() {
-    super();
-  }
-
-  get(key) {
-    return this.get(key);
-  }
-
-  getMerkleTreeOrDefault(key, defaultEl) {
-    const el = this.get(key);
-    if (el === null) {
-      return defaultEl;
+  get_or_element(key, defaultElement) {
+    const element = this.db[key];
+    if (element === undefined) {
+      return defaultElement;
     } else {
-      return el;
+      return element;
     }
   }
 
-  setMerkleTree(key, value) {
-    this.set(key, value);
+  put(key, value) {
+    if (key === undefined || value === undefined) {
+      throw Error("key or value is undefined");
+    }
+    this.db[key] = value;
   }
 
-  clear(key) {
-    this.clearItem(key);
+  del(key) {
+    delete this.db[key];
   }
 
-  setBatch(key_values) {
-    key_values.forEach((el) => {
-      this.set(el.key, el.value);
+  put_batch(key_values) {
+    key_values.forEach((element) => {
+      this.db[element.key] = element.value;
     });
   }
 }

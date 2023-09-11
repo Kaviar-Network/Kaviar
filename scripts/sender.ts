@@ -28,8 +28,8 @@ async function main() {
     console.log("signer:", signer)
     // console.log("Sender:", senderContract)
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
-    const AXELAR_GAS = ethers.utils.parseEther("0.001");
-    const TOTAL_VALUE = ethers.utils.parseEther("0.002");
+    const AXELAR_GAS = ethers.utils.parseEther("0.005");
+    const TOTAL_VALUE = ethers.utils.parseEther("0.006");
     console.log("pass 1");
     const tx = await senderContract
     .connect(signer)

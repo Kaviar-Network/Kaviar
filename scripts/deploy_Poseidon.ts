@@ -2,24 +2,15 @@ import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 //@ts-ignore
 import { poseidonContract, buildPoseidon } from "circomlibjs";
-<<<<<<< HEAD
-import {goerliNet, mantleNet} from "../const"
-=======
-import {mantleNet, lineaNet} from "../const"
->>>>>>> c062cd99d9a727f80572c6d4120ddee6c74b9432
+import { mantleNet,lineaNet} from "../const"
 
 dotenv.config();
 async function main() {
     //linea 0x065C6B312e3aa2b1824F2791AfD85f0D0f07f6a7
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
     const provider = new ethers.providers.StaticJsonRpcProvider(
-<<<<<<< HEAD
-      goerliNet.url,
-      goerliNet.chainId
-=======
-      lineaNet.url,
-      lineaNet.chainId
->>>>>>> c062cd99d9a727f80572c6d4120ddee6c74b9432
+      mantleNet.url,
+      mantleNet.chainId
     );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();

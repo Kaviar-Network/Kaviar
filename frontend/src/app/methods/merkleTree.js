@@ -1,7 +1,7 @@
-import { LocalMerkleTree } from "./localStorage";
+import { JsStorage } from "./localStorage";
 
 export class MerkleTree {
-  constructor(n_levels = 20, prefix, hasher, storage = new LocalMerkleTree()) {
+  constructor(n_levels = 20, prefix, hasher, storage = new JsStorage()) {
     this.n_levels = n_levels;
     this.prefix = prefix;
     this.hasher = hasher;
@@ -27,7 +27,7 @@ export class MerkleTree {
   }
 
   async root() {
-    let root = await this.storage.getMerkleTreeOrDefault(
+    let root = await this.storage.get_or_element(
       MerkleTree.index_to_key(this.prefix, this.n_levels, 0),
       this.zero_values[this.n_levels]
     );
@@ -46,7 +46,7 @@ export class MerkleTree {
       }
 
       async handle_index(level, element_index, sibling_index) {
-        const sibling = await this.storage.getMerkleTreeOrDefault(
+        const sibling = await this.storage.get_or_element(
           MerkleTree.index_to_key(this.prefix, level, sibling_index),
           this.zero_values[level]
         );
@@ -60,12 +60,12 @@ export class MerkleTree {
       this.storage,
       this.zero_values
     );
-    const root = await this.storage.getMerkleTreeOrDefault(
+    const root = await this.storage.get_or_element(
       MerkleTree.index_to_key(this.prefix, this.n_levels, 0),
       this.zero_values[this.n_levels]
     );
 
-    const element = await this.storage.getMerkleTreeOrDefault(
+    const element = await this.storage.get_or_element(
       MerkleTree.index_to_key(this.prefix, 0, index),
       this.zero_values[0]
     );
@@ -99,12 +99,12 @@ export class MerkleTree {
 
         async handle_index(level, element_index, sibling_index) {
           if (level == 0) {
-            this.original_element = await this.storage.getMerkleTreeOrDefault(
+            this.original_element = await this.storage.get_or_element(
               MerkleTree.index_to_key(this.prefix, level, element_index),
               this.zero_values[level]
             );
           }
-          const sibling = await this.storage.getMerkleTreeOrDefault(
+          const sibling = await this.storage.get_or_element(
             MerkleTree.index_to_key(this.prefix, level, sibling_index),
             this.zero_values[level]
           );
@@ -138,7 +138,7 @@ export class MerkleTree {
         value: traverser.current_element,
       });
 
-      await this.storage.setBatch(traverser.key_values_to_put);
+      await this.storage.put_batch(traverser.key_values_to_put);
     } catch (e) {
       console.error(e);
     }

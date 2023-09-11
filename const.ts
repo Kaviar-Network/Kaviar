@@ -1,13 +1,16 @@
 export const verifier = "0x065C6B312e3aa2b1824F2791AfD85f0D0f07f6a7";
 export const poseidonAddr = "0x70E21B9FF22ED107fBE869fAe2Dfd5Ce05dE6fe5";
-export const tornado = "0xF9adAe57F174E3cB32F2AF07a69BC9e7b20Bf303";
-export const sender = "0xB741bc12b42E817B9FFc22b4AF4b2f8982071Bc1";
+export const tornado = "";
+export const sender = "0x6971cf4d1A6A4D1B2d53Eb5793E07A7FB01B3bD9";
 export const receiver = "0x83B7e46230ab279952Ad210c414d554255Ea95a2";
 export const tornado_verifier = "0x0dc773Ab1dbbDB88393FA6a2c7366058ff9b164c"
 export const tornado_poseidonAddr = "0x85702e0dAc93a853D2893A4916EDFa5EA28784fA"
 export const verifierLinea = "0x86ECE5cfBeCeC21054fAC970141537aa57BE177d";
 export const poseidonAddrLinea = "0x52EE8690474938F6fEeB75EAb252f805873c11E1";
-export const receiverLinea = "0x031A0edC3Ab6Da378f3a9C73d8059270Bd07c03d";
+export const receiverLinea = "0x550C6A96623a310eC1c446c27abE525d30c7f780";
+export const poseidonAddrMantle = "0x5bc78e38b0A6bfeDf6fF93617b14C27e9D6dF4d5"
+export const verifierMantle = "0xbd83119F22A213861E783235ad17db8d71C45268"
+export const receiverMantle = "0x06f1527F4B3B302C5eEC867ac88cd64f5a4EB7Da"
 
 export const goerliNet = {
     url: "https://eth-goerli.g.alchemy.com/v2/wQZhZrGooqQlJMi44xtV3WQEAlhY8Ycz",

@@ -1,4 +1,3 @@
-import { MerkleTree, Hasher } from "./merkleTree";
 import { BigNumber } from "@ethersproject/bignumber";
 import { isHexString } from "@ethersproject/bytes";
 
@@ -31,15 +30,15 @@ export function poseidonHash(poseidon, inputs) {
   return bytes32;
 }
 
-// class PoseidonHasher extends Hasher {
-//     constructor(poseidon) {
-//         this.poseidon = poseidon;
-//     }
+export class PoseidonHasher {
+    constructor(poseidon) {
+        this.poseidon = poseidon;
+    }
 
-//     hash(left, right) {
-//         return poseidonHash(this.poseidon, [left, right]);
-//     }
-// }
+    hash(left, right) {
+        return poseidonHash(this.poseidon, [left, right]);
+    }
+}
 
 async function prove(witness) {
   const wasmPath = path.join(__dirname, "../build/withdraw_js/withdraw.wasm");

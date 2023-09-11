@@ -17,12 +17,12 @@
     <script defer src="/__/firebase/9.22.2/firebase-analytics-compat.js"></script>
     <script defer src="/__/firebase/9.22.2/firebase-remote-config-compat.js"></script>
     <script defer src="/__/firebase/9.22.2/firebase-performance-compat.js"></script>
+    <script src="/snarkjs.min.js"></script>
     <!-- 
       initialize the SDK after all desired features are loaded, set useEmulator to false
       to avoid connecting the SDK to running emulators.
     -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
     <style media="screen">
       body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
       #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
@@ -46,7 +46,7 @@
       <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
     </div>
     <p id="load">Firebase SDK Loading&hellip;</p>
-
+    <script src="./snarkjs.min.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const loadEl = document.querySelector('#load');

@@ -1,12 +1,9 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ Verifier__factory} from  "../types";
-<<<<<<< HEAD
-import { goerliNet, mantleNet } from "../const";
-=======
-import { mantleNet, lineaNet, goerliNet } from "../const";
+import {  mantleNet,lineaNet } from "../const";
 
->>>>>>> c062cd99d9a727f80572c6d4120ddee6c74b9432
+
 
 dotenv.config();
 async function main(chain: string) {
@@ -15,13 +12,8 @@ async function main(chain: string) {
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
     const provider = new ethers.providers.StaticJsonRpcProvider(
-<<<<<<< HEAD
-        goerliNet.url,
-        goerliNet.chainId
-=======
-        lineaNet.url,
-        lineaNet.chainId
->>>>>>> c062cd99d9a727f80572c6d4120ddee6c74b9432
+      mantleNet.url,
+      mantleNet.chainId
       );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
