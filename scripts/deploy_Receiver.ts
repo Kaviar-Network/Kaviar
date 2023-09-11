@@ -1,15 +1,15 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ Receiver__factory} from  "../types";
-import {verifier, poseidonAddr, mantleNet} from "../const";
+import {verifier, poseidonAddr, mantleNet, lineaNet, verifierLinea, poseidonAddrLinea} from "../const";
 
 dotenv.config();
 async function main() {
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
     const provider = new ethers.providers.StaticJsonRpcProvider(
-        mantleNet.url,
-        mantleNet.chainId
+        lineaNet.url,
+        lineaNet.chainId
       );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
@@ -23,12 +23,15 @@ async function main() {
     const HEIGHT = 20;
 
     const reveiver = await new Receiver__factory(signer).deploy(
-        mantleNet.gateway,
-        mantleNet.gasservice,
-        verifier,
+        lineaNet.gateway,
+        lineaNet.gasservice,
+        verifierLinea,
         ETH_AMOUNT,
         HEIGHT,
-        poseidonAddr
+        poseidonAddrLinea,
+        {
+            gasPrice: 11**10,
+        }
     );
   
     await (reveiver).deployed();

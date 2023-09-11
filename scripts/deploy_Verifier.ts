@@ -1,15 +1,18 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import{ Verifier__factory} from  "../types";
-import { mantleNet } from "../const";
+import { mantleNet, lineaNet, goerliNet } from "../const";
+
 
 dotenv.config();
-async function main() {
+async function main(chain: string) {
+
+    //linea: 0xb2ECD01D7a7f21B487695773dC03D3d88b615211
    
     const wallet = new ethers.Wallet(process.env.userOldSigner ?? "");
     const provider = new ethers.providers.StaticJsonRpcProvider(
-        mantleNet.url,
-        mantleNet.chainId
+        lineaNet.url,
+        lineaNet.chainId
       );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
@@ -22,7 +25,7 @@ async function main() {
 
 }
 
-main().catch((error) => {
+main("linea").catch((error) => {
     console.error(error);
     process.exitCode = 1;
   })

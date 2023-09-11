@@ -3,6 +3,9 @@ export const poseidonAddr = "0x70E21B9FF22ED107fBE869fAe2Dfd5Ce05dE6fe5";
 export const tornado = "0x88Dc222180a2e5c6C8aEca044Bb186B6557Bd765";
 export const sender = "0xB741bc12b42E817B9FFc22b4AF4b2f8982071Bc1";
 export const receiver = "0x83B7e46230ab279952Ad210c414d554255Ea95a2";
+export const verifierLinea = "0x86ECE5cfBeCeC21054fAC970141537aa57BE177d";
+export const poseidonAddrLinea = "0x52EE8690474938F6fEeB75EAb252f805873c11E1";
+export const receiverLinea = "0x031A0edC3Ab6Da378f3a9C73d8059270Bd07c03d";
 
 export const goerliNet = {
     url: "https://eth-goerli.g.alchemy.com/v2/wQZhZrGooqQlJMi44xtV3WQEAlhY8Ycz",
