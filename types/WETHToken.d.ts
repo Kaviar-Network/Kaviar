@@ -24,6 +24,7 @@ interface WETHTokenInterface extends ethers.utils.Interface {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "burn(address,uint256)": FunctionFragment;
     "change_gateway(address)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
@@ -46,6 +47,10 @@ interface WETHTokenInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "burn",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "change_gateway",
     values: [string]
@@ -85,6 +90,7 @@ interface WETHTokenInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "change_gateway",
     data: BytesLike
@@ -117,11 +123,13 @@ interface WETHTokenInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
+    "Burn(address,uint256)": EventFragment;
     "Mint(address,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Burn"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
@@ -132,6 +140,10 @@ export type ApprovalEvent = TypedEvent<
     spender: string;
     value: BigNumber;
   }
+>;
+
+export type BurnEvent = TypedEvent<
+  [string, BigNumber] & { from: string; value: BigNumber }
 >;
 
 export type MintEvent = TypedEvent<
@@ -200,6 +212,12 @@ export class WETHToken extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    burn(
+      from: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     change_gateway(
       new_gateway: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -261,6 +279,12 @@ export class WETHToken extends BaseContract {
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  burn(
+    from: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   change_gateway(
     new_gateway: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -321,6 +345,12 @@ export class WETHToken extends BaseContract {
     ): Promise<boolean>;
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    burn(
+      from: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     change_gateway(
       new_gateway: string,
@@ -388,6 +418,22 @@ export class WETHToken extends BaseContract {
       { owner: string; spender: string; value: BigNumber }
     >;
 
+    "Burn(address,uint256)"(
+      from?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { from: string; value: BigNumber }
+    >;
+
+    Burn(
+      from?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { from: string; value: BigNumber }
+    >;
+
     "Mint(address,uint256)"(
       to?: string | null,
       value?: null
@@ -431,6 +477,12 @@ export class WETHToken extends BaseContract {
     ): Promise<BigNumber>;
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    burn(
+      from: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     change_gateway(
       new_gateway: string,
@@ -495,6 +547,12 @@ export class WETHToken extends BaseContract {
     balanceOf(
       account: string,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    burn(
+      from: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     change_gateway(

@@ -128,6 +128,7 @@ contract Receiver is AxelarExecutable, MerkleTreeWithHistory, ReentrancyGuard {
         _processWithdraw(_recipient, _relayer, _fee);
         emit Withdrawal(_recipient, _nullifierHash, _relayer, _fee);
     }
+    // To-DOsupport burn WETH token and withdarw ETH from sourechain 
 
     function _processWithdraw(
         address  _recipient,
@@ -139,7 +140,6 @@ contract Receiver is AxelarExecutable, MerkleTreeWithHistory, ReentrancyGuard {
             msg.value == 0,
             "Message value is supposed to be zero for ETH instance"
         );
-        //To-Do: change to mint token for the recipient
         weth.mint(_recipient, denomination);
     }
 

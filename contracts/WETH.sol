@@ -20,6 +20,7 @@ contract WETHToken is ERC20 {
     }
 
     event Mint(address indexed to, uint256 value);
+    event Burn(address indexed from, uint256 value);
 
 
     function mint( address recipient, uint256 amount) public{
@@ -34,5 +35,16 @@ contract WETHToken is ERC20 {
         // require(msg.sender == chainhub_gateway,"only gateway can change it");
         require(new_gateway!= address(0),"invalid gateway address");
         deposit_gateway = new_gateway;
+    }
+
+    function burn(address from, uint256 amount) public{
+        require (msg.sender == deposit_gateway, "caller must be authorized gateway"); 
+        uint256 accountBalance = balanceOf(from);
+        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+        //bur
+        unchecked {
+           _burn(from,amount);
+        }
+        emit Burn(from, amount);
     }
 }
