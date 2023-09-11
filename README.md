@@ -2,6 +2,12 @@
 
 ## Kaviar: Cross-Chain Compliant Currency-Mixer
 
+## Demo Video
+
+
+[![Kaviar](./video/page.png)](https://github.com/KunPengRen/ETH-Kaviar/blob/main/video/eth-sg-keptsecret.mp4)
+
+
 ### Ethereum Singapore 2023 Hackathon
 We create a cross-chain compliant currency-mixer based on the paper [Blockchain Privacy and Regulatory Compliance: Towards a Practical Equilibrium](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) by Buterin et al. 2023.
 
