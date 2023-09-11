@@ -37,10 +37,10 @@ async function main(){
     // need get deposit create with nullifier
     // the old root
     const nullifier = new Uint8Array([
-        185, 151, 137, 236, 179,
-         20, 171,  54, 167, 166,
-        185, 147,  95,   9, 141
-      ])
+        14, 254,   9, 120,   1,
+       163, 132, 192, 220, 124,
+        31, 155,  28,  87, 253
+     ])
    // const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
     const leafIndex = 0
     const nullifierHash = poseidonHash(poseidon, [nullifier, 1, leafIndex])
