@@ -24,6 +24,8 @@ nullifierHash = PoseidonHash(nullifier, 1, leafIndex)
 
 - Use [Axelar](https://github.com/axelarnetwork/axelar-core) to bridge assets between two chains.
 
+## Workflow
+[![Kaviar](./video/workflow.png)]()
 ## Build
 
 First, you must have the Circom 2 compiler installed. See [installation
