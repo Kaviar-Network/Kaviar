@@ -9,7 +9,7 @@
 
 
 ### Ethereum Singapore 2023 Hackathon
-**Congratulations to our team for clinching the 1st Prize for both Axelar Track #1 and Mantle Track #4 in the Ethereum Singapore 2023 Hackathon, Thanks for all the team members and sponsors. (The only one team which won both first prize)**  
+**Congratulations to our team for clinching the 1st Prize for both Axelar Track #1 and Mantle Track #4 in the Ethereum Singapore 2023 Hackathon, Thanks for all the team members and sponsors. (There only one team won two first prizes)**  
 We create a cross-chain compliant currency-mixer based on the paper [Blockchain Privacy and Regulatory Compliance: Towards a Practical Equilibrium](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) by Buterin et al. 2023.
 
 Specifically we
