@@ -11,11 +11,11 @@
 ### Ethereum Singapore 2023 Hackathon
 **Congratulations to our team for clinching the 1st Prize for both Axelar Track #1 and Mantle Track #4 in the Ethereum Singapore 2023 Hackathon, Thanks for all the team members and sponsors. (There only one team won two first prizes)**  
 Our Team members:  
-  [Vincent](https://github.com/KunPengRen)  
-  [Kenneth](https://github.com/DarkArtistry)    
-  [Mohak](https://github.com/mnm458)  
-  [Ramon](https://github.com/reymom)  
-  [Arindam](https://github.com/Arindam2407) 
+  [Vincent](https://github.com/KunPengRen) Twitter (@darmonren), Email (dcsrenk@nus.edu.sg)
+  [Kenneth](https://github.com/DarkArtistry) Twitter (@KernelKennethG), Email (zhenhao.goh@comp.nus.edu.sg)   
+  [Mohak](https://github.com/mnm458) Twitter (@spartablock), Email (mohaknainmalhotra@gmail.com)
+  [Ramon](https://github.com/reymom) Email (ramon_gs95@hotmail.com)
+  [Arindam](https://github.com/Arindam2407) Email (as3316@cam.ac.uk)
 
 We create a cross-chain compliant currency-mixer based on the paper [Blockchain Privacy and Regulatory Compliance: Towards a Practical Equilibrium](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) by Buterin et al. 2023.
 
@@ -54,12 +54,3 @@ cd frontend && npm install && npm run dev
 # run backend
 cd backend && yarn install && yarn run dev
 ```
-## Credits
-
-This project has won the 1st prize for "Best infrastructure & Tooling Project" by Mantle Network and "Best DApp Using Axelar To Enable Cross-Chain Contract Interaction Via Axelar's General Message Passing" By Axelar @ the Ethereum Singapore Conference/Hackathon 2023, registered under the team name KeptSecret. The KeptSecret members are:
-
-Ren Kun Peng, Vincent - PhD Candidate @ NUS Comp Sci, Twitter (@darmonren), GitHub (KunPengRen), Email (dcsrenk@nus.edu.sg)
-Kenneth Goh - Masters Candidate @ NUS Comp Sci, Twitter (@KernelKennethG), GitHub (DarkArtistry), Email (zhenhao.goh@comp.nus.edu.sg)
-Ramon Marc Garcia Seuma - Freelance Full Stack Developer, Twitter (@spartablock), GitHub (reymom), Email (ramon_gs95@hotmail.com)
-Mohak Malhotra - Freelance Full Stack Developer, Twitter (@spartablock), GitHub (mnm458), Email (mohaknainmalhotra@gmail.com)
-Arindam Singh - Undergraduate @ Columbia University Law & Economics, Email (as3316@cam.ac.uk)
