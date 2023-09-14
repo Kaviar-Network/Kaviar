@@ -11,11 +11,16 @@
 ### Ethereum Singapore 2023 Hackathon
 **Congratulations to our team for clinching the 1st Prize for both Axelar Track #1 and Mantle Track #4 in the Ethereum Singapore 2023 Hackathon, Thanks for all the team members and sponsors. (There only one team won two first prizes)**  
 Our Team members:  
-  [Vincent](https://github.com/KunPengRen) Twitter (@darmonren), Email (dcsrenk@nus.edu.sg)
-  [Kenneth](https://github.com/DarkArtistry) Twitter (@KernelKennethG), Email (zhenhao.goh@comp.nus.edu.sg)   
-  [Mohak](https://github.com/mnm458) Twitter (@spartablock), Email (mohaknainmalhotra@gmail.com)
-  [Ramon](https://github.com/reymom) Email (ramon_gs95@hotmail.com)
-  [Arindam](https://github.com/Arindam2407) Email (as3316@cam.ac.uk)
+  [Vincent](https://github.com/KunPengRen) - Twitter (@darmonren), Email (dcsrenk@nus.edu.sg)
+
+  [Kenneth](https://github.com/DarkArtistry) - Twitter (@KernelKennethG), Email (zhenhao.goh@comp.nus.edu.sg)
+
+  [Mohak](https://github.com/mnm458) - Twitter (@spartablock), Email (mohaknainmalhotra@gmail.com)
+
+  [Ramon](https://github.com/reymom) - Email (ramon_gs95@hotmail.com)
+
+  [Arindam](https://github.com/Arindam2407) - Email (as3316@cam.ac.uk)
+
 
 We create a cross-chain compliant currency-mixer based on the paper [Blockchain Privacy and Regulatory Compliance: Towards a Practical Equilibrium](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364) by Buterin et al. 2023.
 
