@@ -46,3 +46,12 @@ cd frontend && npm install && npm run dev
 # run backend
 cd backend && yarn install && yarn run dev
 ```
+## Credits
+
+This project has won the 1st prize for "Best infrastructure & Tooling Project" by Mantle Network and "Best DApp Using Axelar To Enable Cross-Chain Contract Interaction Via Axelar's General Message Passing" By Axelar @ the Ethereum Singapore Conference/Hackathon 2023, registered under the team name KeptSecret. The KeptSecret members are:
+
+Ren Kun Peng, Vincent - PhD Candidate @ NUS Comp Sci, Twitter (@darmonren), GitHub (KunPengRen), Email (dcsrenk@nus.edu.sg)
+Kenneth Goh - Masters Candidate @ NUS Comp Sci, Twitter (@KernelKennethG), GitHub (DarkArtistry), Email (zhenhao.goh@comp.nus.edu.sg)
+Ramon Marc Garcia Seuma - Freelance Full Stack Developer, Twitter (@spartablock), GitHub (reymom), Email (ramon_gs95@hotmail.com)
+Mohak Malhotra - Freelance Full Stack Developer, Twitter (@spartablock), GitHub (mnm458), Email (mohaknainmalhotra@gmail.com)
+Arindam Singh - Undergraduate @ Columbia University Law & Economics, Email (as3316@cam.ac.uk)
