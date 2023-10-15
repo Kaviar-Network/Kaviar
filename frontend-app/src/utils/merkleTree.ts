@@ -76,7 +76,7 @@ export class MerkleTree {
   }
 
   async root() {
-    let root = await this.storage.getOrElement(
+    let root = this.storage.getOrElement(
       MerkleTree.indexToKey(this.prefix, this.nLevels, 0),
       this.zeroValues[this.nLevels]
     );
@@ -104,7 +104,7 @@ export class MerkleTree {
         elementIndex: number,
         siblingIndex: number
       ) {
-        const sibling = await this.storage.getOrElement(
+        const sibling = this.storage.getOrElement(
           MerkleTree.indexToKey(this.prefix, level, siblingIndex),
           this.zeroValues[level]
         );
@@ -118,12 +118,12 @@ export class MerkleTree {
       this.storage,
       this.zeroValues
     );
-    const root = await this.storage.getOrElement(
+    const root = this.storage.getOrElement(
       MerkleTree.indexToKey(this.prefix, this.nLevels, 0),
       this.zeroValues[this.nLevels]
     );
 
-    const element = await this.storage.getOrElement(
+    const element = this.storage.getOrElement(
       MerkleTree.indexToKey(this.prefix, 0, index),
       this.zeroValues[0]
     );
@@ -168,12 +168,12 @@ export class MerkleTree {
           siblingIndex: number
         ) {
           if (level == 0) {
-            this.originalElement = await this.storage.getOrElement(
+            this.originalElement = this.storage.getOrElement(
               MerkleTree.indexToKey(this.prefix, level, elementIndex),
               this.zeroValues[level]
             );
           }
-          const sibling = await this.storage.getOrElement(
+          const sibling = this.storage.getOrElement(
             MerkleTree.indexToKey(this.prefix, level, siblingIndex),
             this.zeroValues[level]
           );
@@ -207,7 +207,7 @@ export class MerkleTree {
         value: traverser.currentElement,
       });
 
-      await this.storage.putBatch(traverser.keyValuesToPut);
+      this.storage.putBatch(traverser.keyValuesToPut);
     } catch (e) {
       console.error(e);
     }
@@ -228,7 +228,7 @@ export class MerkleTree {
       } else {
         siblingIndex -= 1;
       }
-      await handler.handleIndex(i, currentIndex, siblingIndex);
+      handler.handleIndex(i, currentIndex, siblingIndex);
       currentIndex = Math.floor(currentIndex / 2);
     }
   }
