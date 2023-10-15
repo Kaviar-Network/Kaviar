@@ -48,6 +48,8 @@ import {
     withdraw as withdrawApiCall
 } from "@/api/api";
 import styles from './page.module.css';
+import { DataSnapshot } from "firebase/database";
+import { getMerkleTreePromise, writeTreeValues } from "@/firebase/methods";
 
 const snarkjs = require("snarkjs");
 
@@ -109,13 +111,36 @@ const Home: NextPage = () => {
     }
 
     useEffect(() => {
-        const getZeusTreeWindow = async () => {
+        // const setZeusTreeWindow = async () => {
+        //     const zeus = await buildPoseidon();
+        //     const tree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
+        //     setTree(tree);
+        //     console.log("tree ", tree);
+        // };
+        // getZeusTreeWindow();
+
+
+        const getMerkleTree = async () => {
             const zeus = await buildPoseidon();
-            const tree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
-            setTree(tree);
-            console.log("tree ", tree);
-        };
-        getZeusTreeWindow();
+            const newTree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
+
+            getMerkleTreePromise()
+                .then(async (snapshot: DataSnapshot) => {
+                    if (snapshot.exists()) {
+                        console.log("found tree in database");
+                        setTree({ ...newTree, zeroValues: snapshot.val() as string[] } as MerkleTree)
+                    } else {
+                        console.log("no tree found in database");
+                        writeTreeValues(newTree.zeroValues);
+                        setTree(newTree);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+        getMerkleTree();
+
     }, []);
 
     const downloadTxtFile = (jsonData: any) => {
