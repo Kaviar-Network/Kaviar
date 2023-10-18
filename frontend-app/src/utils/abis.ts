@@ -141,3 +141,5 @@ export const withdrawFromLineaABI = [
     },
   ],
 ] as const;
+
+export const withdrawFromScrollSepoliaABI = [[{}]] as const;

@@ -39,7 +39,8 @@ import { PoseidonHasher, poseidonHash } from "@/utils/poseidon";
 import {
     depositCrossChainABI,
     withdrawFromMantleABI,
-    withdrawFromLineaABI
+    withdrawFromLineaABI,
+    withdrawFromScrollSepoliaABI
 } from "@/utils/abis";
 import { log } from "@/utils/logger";
 import {
@@ -64,6 +65,7 @@ enum Networks {
     Arbitrum = "arbitrum",
     Polygon = "polygon",
     Goerly = "goerly",
+    Scroll = "scroll",
 }
 
 const Home: NextPage = () => {
@@ -336,6 +338,10 @@ const Home: NextPage = () => {
             }
             case Networks.Goerly: {
                 // withdrawFromLinea?.();
+                break;
+            }
+            case Networks.Scroll: {
+                // withdrawFromScroll?.();
                 break;
             }
             default: {
