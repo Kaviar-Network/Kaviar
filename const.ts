@@ -40,3 +40,10 @@ export const lineaNet = {
     gasservice: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
     name: "linea"
 }
+export const scrollNet = {
+    url:"https://sepolia-rpc.scroll.io",
+    chainId: 534351,
+    gateway: "0xe432150cce91c13a887f7D836923d5597adD8E31",
+    gasservice: "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
+    name: "scrollSepolia"
+}
