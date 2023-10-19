@@ -5,7 +5,7 @@ import { Contract, ContractFactory, BigNumber, BigNumberish } from "ethers";
 //@ts-ignore
 import { poseidonContract, buildPoseidon } from "circomlibjs";
 import {Receiver__factory} from "../types";
-import { mantleNet, poseidonAddr, receiver } from "../const";
+import { scrollNet, poseidonAddr, receiverScroll } from "../const";
 // @ts-ignore
 import { MerkleTree, Hasher } from "../src/merkleTree";
 // @ts-ignore
@@ -13,19 +13,22 @@ import { groth16 } from "snarkjs";
 import path from "path";
 
 async function main(){
-    const userOldSignerWallet = new ethers.Wallet(process.env.userOldSigner ?? "");
+    // the one invoke receiver contract to send tx
+    const userOldSignerWallet = new ethers.Wallet(process.env.scrollSigner ?? "");
     const provider = new ethers.providers.StaticJsonRpcProvider(
-        mantleNet.url,
-        mantleNet.chainId
+        scrollNet.url,
+        scrollNet.chainId
       );
     const userOldSigner = userOldSignerWallet.connect(provider);
+    // the relayer params of withdraw method
     const relayerSignerWallet = new ethers.Wallet(process.env.relayerSigner ?? "");
     const relayerSigner = relayerSignerWallet.connect(provider);
+    // the recepient params of withdraw method
     const userNewSignerWallet = new ethers.Wallet(process.env.userNewSigner ?? "");
     const userNewSigner = userNewSignerWallet.connect(provider);
 
     const poseidon = await buildPoseidon();
-    const receiverContract = new Receiver__factory(userOldSigner).attach(ethers.utils.getAddress(receiver));
+    const receiverContract = new Receiver__factory(userOldSigner).attach(ethers.utils.getAddress(receiverScroll));
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     const HEIGHT = 20;
     console.log("pass 1");
@@ -36,22 +39,23 @@ async function main(){
     );
     // need get deposit create with nullifier
     // the old root
+    // copy the output of sender.ts
     const nullifier = new Uint8Array([
-        14, 254,   9, 120,   1,
-       163, 132, 192, 220, 124,
-        31, 155,  28,  87, 253
+        36, 122,  94, 210, 155,
+       215, 120, 154,  68, 223,
+        87, 221, 170,  61,  77
      ])
    // const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
     const leafIndex = 0
     const nullifierHash = poseidonHash(poseidon, [nullifier, 1, leafIndex])
-    const commitment = "0x131d05841a55fe138852b423e66d766620a71c1b259254bea564839fb99e3f27"
+    const commitment = "0x1dc9bbb3194eddda4e23238467e0d47f9599851aef5446935619caf6c9984b3d"
     console.log(tree);
     
     //console.log(await tree.root(), await tornadoContract.roots(0));
     await tree.insert(commitment);
     //console.log(tree.totalElements, await tornadoContract.nextIndex());
     //check the new root after deposit
-   // console.log(await tree.root(), await tornadoContract.roots(1));
+    console.log(await tree.root(), await receiverContract.roots(1));
 
     const recipient = await userNewSigner.getAddress();
     const relayer = await relayerSigner.getAddress();
@@ -76,12 +80,13 @@ async function main(){
 
     const solProof = await prove(witness);
     console.log(solProof)
-
+    // relayerSinger sign tx and pay gas fee, so relayerSinger should have balance
     const txWithdraw = await receiverContract
         .connect(relayerSigner)
         .withdraw(solProof, root, nullifierHash, recipient, relayer, fee);
     const receiptWithdraw = await txWithdraw.wait();
     console.log("Withdraw gas cost", receiptWithdraw.gasUsed.toNumber()); 
+    console.log("Withdraw tx hash", txWithdraw.hash);
 
 }
 

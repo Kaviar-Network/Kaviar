@@ -4,16 +4,16 @@ import {ethers} from "hardhat";
 //@ts-ignore
 import {poseidonContract, buildPoseidon } from "circomlibjs";
 import {Sender__factory} from "../types";
-import { senderPolygon, scrollNet, polygonNet, receiverScroll} from "../const";
+import { senderPolygon,senderBSC, scrollNet, polygonNet,receiverScroll, bscNet} from "../const";
 
 dotenv.config();
 async function main() {
 
    
-    const wallet = new ethers.Wallet(process.env.polygonSigner ?? "")
+    const wallet = new ethers.Wallet(process.env.bscSigner ?? "")
     const provider = new ethers.providers.StaticJsonRpcProvider(
-        polygonNet.url,
-        polygonNet.chainId
+        bscNet.url,
+        bscNet.chainId
       );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
@@ -24,12 +24,13 @@ async function main() {
     const deposit = Deposit.new(poseidon);
 
     
-    const senderContract = new Sender__factory(signer).attach(ethers.utils.getAddress(senderPolygon));
+    const senderContract = new Sender__factory(signer).attach(ethers.utils.getAddress(senderBSC));
     console.log("signer:", signer)
     // console.log("Sender:", senderContract)
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
-    const AXELAR_GAS = ethers.utils.parseEther("0.005");
-    const TOTAL_VALUE = ethers.utils.parseEther("0.006");
+    const AXELAR_GAS = ethers.utils.parseEther("0.01");
+    const TOTAL_VALUE = ethers.utils.parseEther("0.011");
+  
     console.log("pass 1");
     const tx = await senderContract
     .connect(signer)
@@ -41,6 +42,7 @@ async function main() {
     );
 
     console.log("nullifier: ", deposit.nullifier)
+    console.log("commitment: ", deposit.commitment)
   
     console.log(receipt);
     console.log(events);
