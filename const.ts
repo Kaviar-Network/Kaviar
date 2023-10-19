@@ -11,6 +11,8 @@ export const receiverLinea = "0x550C6A96623a310eC1c446c27abE525d30c7f780";
 export const poseidonAddrMantle = "0x5bc78e38b0A6bfeDf6fF93617b14C27e9D6dF4d5"
 export const verifierMantle = "0xbd83119F22A213861E783235ad17db8d71C45268"
 export const receiverMantle = "0x06f1527F4B3B302C5eEC867ac88cd64f5a4EB7Da"
+export const poseidonAddrScroll = "0x9d77bbf021c153a91116E3088ec92c606dB23FAc"
+export const verifierScroll = "0x28ac354197B3bA5f626cCb5fb2573D430855d9Fb"
 
 export const goerliNet = {
     url: "https://eth-goerli.g.alchemy.com/v2/wQZhZrGooqQlJMi44xtV3WQEAlhY8Ycz",
