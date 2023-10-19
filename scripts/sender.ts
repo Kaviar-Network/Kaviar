@@ -4,16 +4,16 @@ import {ethers} from "hardhat";
 //@ts-ignore
 import {poseidonContract, buildPoseidon } from "circomlibjs";
 import {Sender__factory} from "../types";
-import { sender,receiver, mantleNet, bscNet, lineaNet, receiverLinea} from "../const";
+import { senderPolygon, scrollNet, polygonNet, receiverScroll} from "../const";
 
 dotenv.config();
 async function main() {
 
    
-    const wallet = new ethers.Wallet(process.env.userOldSigner ?? "")
+    const wallet = new ethers.Wallet(process.env.polygonSigner ?? "")
     const provider = new ethers.providers.StaticJsonRpcProvider(
-        bscNet.url,
-        bscNet.chainId
+        polygonNet.url,
+        polygonNet.chainId
       );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();
@@ -24,7 +24,7 @@ async function main() {
     const deposit = Deposit.new(poseidon);
 
     
-    const senderContract = await new Sender__factory(signer).attach(ethers.utils.getAddress(sender));
+    const senderContract = new Sender__factory(signer).attach(ethers.utils.getAddress(senderPolygon));
     console.log("signer:", signer)
     // console.log("Sender:", senderContract)
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
@@ -33,7 +33,7 @@ async function main() {
     console.log("pass 1");
     const tx = await senderContract
     .connect(signer)
-    .deposit(deposit.commitment, lineaNet.name, receiverLinea, { value: TOTAL_VALUE, gasLimit:1000000 });
+    .deposit(deposit.commitment, scrollNet.name, receiverScroll, { value: TOTAL_VALUE, gasLimit:1000000 });
     const receipt = await tx.wait();
     const events = await senderContract.queryFilter(
         senderContract.filters.Deposit(),
@@ -95,11 +95,11 @@ function getPoseidonFactory(nInputs: number) {
     const abiJson = poseidonContract.generateABI(nInputs);
     const abi = new ethers.utils.Interface(abiJson);
     return new ethers.ContractFactory(abi, bytecode);
-  }
+}
 
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
-  })
+})
 
 
