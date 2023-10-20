@@ -26,14 +26,14 @@ nullifierHash = PoseidonHash(nullifier, 1, leafIndex)
 
 - Use [Axelar](https://github.com/axelarnetwork/axelar-core) to transfer commitment data between two chains.
 
-- The living demo is at [here](), we now support privacy transfer assets from Polygon zkEVM to scroll testnet.
+- The living demo is at [here](http://13.229.84.66:3000/), we now support privacy transfer assets from Polygon zkEVM to scroll testnet.
 
 ## For ETH Hong Kong Hackathon
 During this Hackathon, we improve our platform to support the Scroll and Polygon zkEVM. <br>
 Test case transaction below:  <br>
 Cross-chain sender at Polygon zkEVM: https://testnet-zkevm.polygonscan.com/tx/0xfbf70bb619940bb0faf4a7080c2beb4d5efd0f2da5b7a3c5b80d47925525e172 <br>
 Axelar Scan for cross-chain data transfer: https://testnet.axelarscan.io/gmp/0xfbf70bb619940bb0faf4a7080c2beb4d5efd0f2da5b7a3c5b80d47925525e172 <br>
-Cross-chain receiver at Scroll: 
+Cross-chain receiver at Scroll: https://sepolia.scrollscan.com/tx/0x4ff03782a2de4875e78d9ee6ce7057c9e50d670ed6daec678e6d1d1f67ab903a
 
 ## Workflow
 [![Kaviar](./video/workflow.png)]()
