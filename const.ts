@@ -1,3 +1,5 @@
+import exp from "constants";
+
 export const verifier = "0x065C6B312e3aa2b1824F2791AfD85f0D0f07f6a7";
 export const poseidonAddr = "0x70E21B9FF22ED107fBE869fAe2Dfd5Ce05dE6fe5";
 export const tornado = "";
@@ -16,12 +18,13 @@ export const poseidonAddrScroll = "0x9d77bbf021c153a91116E3088ec92c606dB23FAc";
 export const poseidonPolygonZq = "0x9025e74D23384f664CfEB07F1d8ABd19570758B5";
 export const verifierScroll = "0x28ac354197B3bA5f626cCb5fb2573D430855d9Fb";
 // this is the address of the receiver contract on Scrool that will be deployed
-export const receiverScroll = "0xb6c0774ef50fd88b16dadbcc4333b43c8f771b82";
+export const receiverScroll = "0x574F9863e69a9944421Cb39F6abA3AdE6c6741aF";
 //this is the address of the sender contract on Polygon that will be deployed
 export const senderPolygon = "0x3c7E87e06C2Ef82A65731d85e005919897DF3518";
 // this is the address of the receiver contract on Polygon that will be deployed
 export const senderBSC = "0x361A5f28947F6a4726bBE6e2555a37BB6b5B538d";
 export const verifierPolygonZq = "0xfa29381958DD8a2dD86246FC0Ab2932972640580";
+export const senderPolygonZq = "0x0123140C6eaf01c1A7BD9Fb16714090C1A22A4BE";
 
 export const goerliNet = {
   url: "https://eth-goerli.g.alchemy.com/v2/wQZhZrGooqQlJMi44xtV3WQEAlhY8Ycz",

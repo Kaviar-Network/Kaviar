@@ -35,6 +35,10 @@
     "typescript": "5.2.2"
   },
   "browser": {
-    "fs": false
+    "fs": false,
+    "path": false, // optional I had this error so I added
+    "os": false, // optional I had this error so I added
+    "net": false, // optional I had this error so I added
+    "tls": false
   }
 }

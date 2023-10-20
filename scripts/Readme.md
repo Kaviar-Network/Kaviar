@@ -14,12 +14,14 @@ npx hardhat run scripts/deploy_Verifier.ts
 
 npx hardhat run scripts/deploy_Receiver.ts
 0x3c7E87e06C2Ef82A65731d85e005919897DF3518
+0x574F9863e69a9944421Cb39F6abA3AdE6c6741aF (Scroll new)
 
 # Deploy Sender
 
 npx hardhat run scripts/deploy_Sender.ts
 0x9025e74D23384f664CfEB07F1d8ABd19570758B5 (Polygon Mumbai)
 0x602475C17C020FE3AF7294eC4aCF68f93198332c (Polygon zkEVM)
+0x0123140C6eaf01c1A7BD9Fb16714090C1A22A4BE (polygon zkEVM new)
 
 ## test sender
 

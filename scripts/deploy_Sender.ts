@@ -17,8 +17,8 @@ async function main() {
   // console.log(`Wallet balance ${balance}`);
 
   const ETH_AMOUNT = ethers.utils.parseEther("0.001");
-  const AXELAR_GAS = ethers.utils.parseEther("0.01");
-  const TOTAL_VALUE = ethers.utils.parseEther("0.011");
+  const AXELAR_GAS = ethers.utils.parseEther("0.001");
+  const TOTAL_VALUE = ethers.utils.parseEther("0.002");
 
   const verifier = await new Sender__factory(signer).deploy(
     polygonZkEVM.gateway,
