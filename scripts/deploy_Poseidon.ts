@@ -2,15 +2,15 @@ import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 //@ts-ignore
 import { poseidonContract, buildPoseidon } from "circomlibjs";
-import { scrollNet,lineaNet} from "../const"
+import { scrollNet, lineaNet, polygonZkEVM} from "../const"
 
 dotenv.config();
 async function main() {
     //linea 0x065C6B312e3aa2b1824F2791AfD85f0D0f07f6a7
-    const wallet = new ethers.Wallet(process.env.scrollSigner ?? "");
+    const wallet = new ethers.Wallet(process.env.polygonSigner ?? "");
     const provider = new ethers.providers.StaticJsonRpcProvider(
-      scrollNet.url,
-      scrollNet.chainId
+      polygonZkEVM.url,
+      polygonZkEVM.chainId
     );
     const signer = wallet.connect(provider);
     const balanceBN = await signer.getBalance();

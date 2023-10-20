@@ -2,11 +2,13 @@
 
 npx hardhat run scripts/deploy_Poseidon.ts
 0x9d77bbf021c153a91116E3088ec92c606dB23FAc
+0x9025e74D23384f664CfEB07F1d8ABd19570758B5 (Polygon zkEVM)
 
 # Deploy Verifier
 
 npx hardhat run scripts/deploy_Verifier.ts
 0x28ac354197B3bA5f626cCb5fb2573D430855d9Fb
+0xfa29381958DD8a2dD86246FC0Ab2932972640580 (Polygon zkEVM)
 
 # Deploy Receiver
 
@@ -17,12 +19,12 @@ npx hardhat run scripts/deploy_Receiver.ts
 
 npx hardhat run scripts/deploy_Sender.ts
 0x9025e74D23384f664CfEB07F1d8ABd19570758B5 (Polygon Mumbai)
-
-
+0x602475C17C020FE3AF7294eC4aCF68f93198332c (Polygon zkEVM)
 
 ## test sender
 
 ## at BSC
+
 ```
 npx hardhat run scripts/sender.ts
 # you would see a nullifier and comment output in terminal
@@ -35,8 +37,10 @@ nullifier:  Uint8Array(15) [
 commitment:  0x1dc9bbb3194eddda4e23238467e0d47f9599851aef5446935619caf6c9984b3d
 
 ```
+
 ## check your tx is confirmed at axelar scan by send sender tx hash
- https://testnet.axelarscan.io/gmp/
+
+https://testnet.axelarscan.io/gmp/
 //tx hash https://testnet.axelarscan.io/gmp/0xf46c09b61efce78579828345f552361be0e39ab3a6415b3eed4c13a4012b1d57:10
 
 ## at scroll

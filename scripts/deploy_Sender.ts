@@ -1,14 +1,14 @@
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 import { Sender__factory } from "../types";
-import { polygonNet,bscNet } from "../const";
+import { polygonNet, bscNet, polygonZkEVM } from "../const";
 
 dotenv.config();
 async function main() {
-  const wallet = new ethers.Wallet(process.env.bscSigner ?? "");
+  const wallet = new ethers.Wallet(process.env.polygonSigner ?? "");
   const provider = new ethers.providers.StaticJsonRpcProvider(
-    bscNet.url,
-    bscNet.chainId
+    polygonZkEVM.url,
+    polygonZkEVM.chainId
   );
   //  const provider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s1.binance.org:8545", {name: "bsc", chainId: 97})
   const signer = wallet.connect(provider);
@@ -21,8 +21,8 @@ async function main() {
   const TOTAL_VALUE = ethers.utils.parseEther("0.011");
 
   const verifier = await new Sender__factory(signer).deploy(
-    bscNet.gateway,
-    bscNet.gasservice,
+    polygonZkEVM.gateway,
+    polygonZkEVM.gasservice,
     ETH_AMOUNT,
     AXELAR_GAS
   );
