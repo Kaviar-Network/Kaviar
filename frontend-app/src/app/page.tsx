@@ -38,9 +38,7 @@ import { MerkleTree } from "@/utils/merkleTree";
 import { PoseidonHasher, poseidonHash } from "@/utils/poseidon";
 import {
     depositCrossChainABI,
-    withdrawFromMantleABI,
-    withdrawFromLineaABI,
-    withdrawFromScrollSepoliaABI
+    withdrawABI,
 } from "@/utils/abis";
 import { log } from "@/utils/logger";
 import {
@@ -62,17 +60,17 @@ enum TabOption {
 enum Networks {
     Ethereum = "ethereum",
     Mantle = "mantle",
-    Arbitrum = "arbitrum",
     Polygon = "polygon",
     Goerly = "goerly",
     Scroll = "scroll",
+    Binance = "bsc"
 }
 
 const Home: NextPage = () => {
     const [tabOption, setTabOption] = useState<TabOption>(TabOption.Deposit);
     const [tree, setTree] = useState<MerkleTree>();
-    const [networkFrom, setNetworkFrom] = useState<Networks>(Networks.Ethereum);
-    const [networkTo, setNetworkTo] = useState<Networks>(Networks.Mantle);
+    const [networkFrom, setNetworkFrom] = useState<Networks>(Networks.Binance);
+    const [networkTo, setNetworkTo] = useState<Networks>(Networks.Scroll);
     const [depositing, setDepositing] = useState(false);
     const [depositAmount, setDepositAmount] = useState<BigInt>();
     const [withdrawAmount, setWithdrawAmount] = useState<BigInt>();
@@ -113,35 +111,35 @@ const Home: NextPage = () => {
     }
 
     useEffect(() => {
-        // const setZeusTreeWindow = async () => {
-        //     const zeus = await buildPoseidon();
-        //     const tree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
-        //     setTree(tree);
-        //     console.log("tree ", tree);
-        // };
-        // getZeusTreeWindow();
-
-
-        const getMerkleTree = async () => {
+        const setZeusTreeWindow = async () => {
             const zeus = await buildPoseidon();
-            const newTree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
+            const tree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
+            setTree(tree);
+            console.log("tree ", tree);
+        };
+        setZeusTreeWindow();
 
-            getMerkleTreePromise()
-                .then(async (snapshot: DataSnapshot) => {
-                    if (snapshot.exists()) {
-                        console.log("found tree in database");
-                        setTree({ ...newTree, zeroValues: snapshot.val() as string[] } as MerkleTree)
-                    } else {
-                        console.log("no tree found in database");
-                        writeTreeValues(newTree.zeroValues);
-                        setTree(newTree);
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
-        getMerkleTree();
+
+        // const getMerkleTree = async () => {
+        //     const zeus = await buildPoseidon();
+        //     const newTree = new MerkleTree(20, "test", new PoseidonHasher(zeus));
+
+        //     getMerkleTreePromise()
+        //         .then(async (snapshot: DataSnapshot) => {
+        //             if (snapshot.exists()) {
+        //                 console.log("found tree in database");
+        //                 setTree({ ...newTree, zeroValues: snapshot.val() as string[] } as MerkleTree)
+        //             } else {
+        //                 console.log("no tree found in database");
+        //                 writeTreeValues(newTree.zeroValues);
+        //                 setTree(newTree);
+        //             }
+        //         })
+        //         .catch((error) => {
+        //             console.error(error);
+        //         });
+        // }
+        // getMerkleTree();
 
     }, []);
 
@@ -190,7 +188,7 @@ const Home: NextPage = () => {
         value: BigInt(`${2000000000000000}`),
     })
 
-    const { data, write } = useContractWrite(config);
+    const { data, write: writeDeposit } = useContractWrite(config);
 
     const deposit = async () => {
         setDepositing(true);
@@ -220,10 +218,16 @@ const Home: NextPage = () => {
         });
 
 
-        write?.();
+        writeDeposit?.();
 
-        const responseData = await depositApiCall(hashCommitment, networkTo)
-        console.log("deposit data response: ", responseData);
+        // const responseData = await depositApiCall(hashCommitment, networkTo)
+        const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
+
+        console.log("response = ", await response.blob())
+
+        const bodyData = await response.json()
+
+        console.log("bodyData: ", bodyData);
 
         setDepositing(false);
     };
@@ -245,7 +249,7 @@ const Home: NextPage = () => {
     //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
     const { config: mantleConfig, error: mantleError } = usePrepareContractWrite({
         address: '0xD6dd35Aa31fF49d1620A8a91DEe0a011045b7656',
-        abi: withdrawFromMantleABI,
+        abi: withdrawABI,
         functionName: 'withdraw',
         args: [
             debouncedWitnessProof !== undefined ? debouncedWitnessProof : defaultAbc,
@@ -260,29 +264,49 @@ const Home: NextPage = () => {
 
     const { data: mantleData, write: withdrawFromMantle } = useContractWrite(mantleConfig);
 
-    // //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
-    // const { config: lineaConfig, error: lineaError } = usePrepareContractWrite({
-    //     address: '0x550C6A96623a310eC1c446c27abE525d30c7f780',
-    //     abi: withdrawFromLineaABI,
-    //     functionName: 'withdraw',
-    //     args: [
-    //         debouncedWitnessProof || defaultAbc,
-    //         debouncedWitness?.root as `0x${string}`,
-    //         debouncedWitness?.nullifierHash as `0x${string}`,
-    //         debouncedWitness?.recipient as `0x${string}`,
-    //         debouncedWitness?.relayer as `0x${string}`,
-    //         BigInt(debouncedWitness?.fee || 0),
-    //     ],
-    //     value: BigInt(`${2000000000000000}`),
-    // })
+    //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    const { config: lineaConfig, error: lineaError } = usePrepareContractWrite({
+        address: '0x550C6A96623a310eC1c446c27abE525d30c7f780',
+        abi: withdrawABI,
+        functionName: 'withdraw',
+        args: [
+            debouncedWitnessProof || defaultAbc,
+            debouncedWitness?.root as `0x${string}`,
+            debouncedWitness?.nullifierHash as `0x${string}`,
+            debouncedWitness?.recipient as `0x${string}`,
+            debouncedWitness?.relayer as `0x${string}`,
+            BigInt(debouncedWitness?.fee || 0),
+        ],
+        value: BigInt(`${2000000000000000}`),
+    })
 
-    // const { data: lineaData, write: withdrawFromLinea } = useContractWrite(lineaConfig);
+    const { data: lineaData, write: withdrawFromLinea } = useContractWrite(lineaConfig);
+
+    //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    const { config: scrollConfig, error: scrollError } = usePrepareContractWrite({
+        address: '0x3c7E87e06C2Ef82A65731d85e005919897DF3518',
+        abi: withdrawABI,
+        functionName: 'withdraw',
+        args: [
+            debouncedWitnessProof || defaultAbc,
+            debouncedWitness?.root as `0x${string}`,
+            debouncedWitness?.nullifierHash as `0x${string}`,
+            debouncedWitness?.recipient as `0x${string}`,
+            debouncedWitness?.relayer as `0x${string}`,
+            BigInt(debouncedWitness?.fee || 0),
+        ],
+        value: BigInt(`${2000000000000000}`),
+    })
+
+    const { data: scrollData, write: withdrawFromScroll } = useContractWrite(scrollConfig);
 
     const withdraw = async () => {
         // const apiCallLeaf = leafIndexApiCall(networkTo);
         console.log("[withdraw]");
 
         const leafResponse = await fetch(`http://localhost:3001/leafindex/${networkTo}`) // leafindex
+        console.log("leafResponse = ", await leafResponse.blob());
+
         const leafIndex = await leafResponse.json()
         console.log("leafIndex = ", leafIndex);
 
@@ -309,8 +333,10 @@ const Home: NextPage = () => {
         // console.log("responseData for [withdraw], ", responseData);
 
         const response = await fetch(`http://localhost:3001/withdraw/${leafIndex}/${networkTo}`)
+        console.log("response = ", await response.blob());
         const bodyData = await response.json()
-        console.log("bodyData: ", bodyData);
+        console.log("bodyData: ", response);
+
 
         const fee = 0;
         const constructedWitness: Witness = {
@@ -331,17 +357,17 @@ const Home: NextPage = () => {
         console.log("solProof : ", solProof);
         setWitnessProof(solProof);
 
-        switch (networkFrom) {
+        switch (networkTo) {
             case Networks.Mantle: {
                 withdrawFromMantle?.();
                 break;
             }
             case Networks.Goerly: {
-                // withdrawFromLinea?.();
+                withdrawFromLinea?.();
                 break;
             }
             case Networks.Scroll: {
-                // withdrawFromScroll?.();
+                withdrawFromScroll?.();
                 break;
             }
             default: {
@@ -422,6 +448,9 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Ethereum}>Ethereum Network</MenuItem>
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
+                                                        <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
+                                                        <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
                                                 </FormControl>
                                                 <br />
@@ -445,6 +474,9 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Ethereum}>Ethereum Network</MenuItem>
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
+                                                        <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
+                                                        <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
                                                 </FormControl>
                                                 <br />
@@ -519,6 +551,9 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Ethereum}>Ethereum Network</MenuItem>
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
+                                                        <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
+                                                        <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
                                                 </FormControl>
                                                 <br />
@@ -541,6 +576,9 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Ethereum}>Ethereum Network</MenuItem>
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
+                                                        <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
+                                                        <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
                                                 </FormControl>
                                                 <br />
