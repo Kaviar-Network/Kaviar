@@ -41,11 +41,11 @@ import {
     withdrawABI,
 } from "@/utils/abis";
 import { log } from "@/utils/logger";
-import {
-    deposit as depositApiCall,
-    leafIndex as leafIndexApiCall,
-    withdraw as withdrawApiCall
-} from "@/api/api";
+// import {
+//     deposit as depositApiCall,
+//     leafIndex as leafIndexApiCall,
+//     withdraw as withdrawApiCall
+// } from "@/api/api";
 import styles from './page.module.css';
 import { DataSnapshot } from "firebase/database";
 import { getMerkleTreePromise, writeTreeValues } from "@/firebase/methods";
@@ -72,7 +72,7 @@ const Home: NextPage = () => {
     const [networkFrom, setNetworkFrom] = useState<Networks>(Networks.Binance);
     const [networkTo, setNetworkTo] = useState<Networks>(Networks.Scroll);
     const [depositing, setDepositing] = useState(false);
-    const [depositAmount, setDepositAmount] = useState<BigInt>();
+    const [depositAmount, setDepositAmount] = useState<BigInt>(BigInt(1000000000000000));
     const [withdrawAmount, setWithdrawAmount] = useState<BigInt>();
     const [privateNote, setPrivateNote] = useState<string>();
     const [hashCommitment, setHashCommitment] = useState<string>("0x" + "0".repeat(64));
@@ -83,9 +83,10 @@ const Home: NextPage = () => {
     const [witness, setWitness] = useState<Witness>();
 
     const debouncedNetworkTo = useDebounce(networkTo);
-    const debouncedHashCommitment = useDebounce(hashCommitment);
+    // const debouncedHashCommitment = useDebounce(hashCommitment);
     const debouncedWitnessProof = useDebounce(witnessProof);
     const debouncedWitness = useDebounce(witness);
+    const debouncedDepositAmount = useDebounce(depositAmount);
 
     const defaultAbc: { a: number[]; b: number[][]; c: number[]; } = {
         a: [0, 0], b: [[0, 0], [0, 0]], c: [0, 0]
@@ -175,59 +176,57 @@ const Home: NextPage = () => {
         }
     };
 
-    //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    // pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
     const { config, error, isError } = usePrepareContractWrite({
-        address: '0xA78ADcae31FE6c67f9161c269f68FD74faea23AC',
+        // address: '0xA78ADcae31FE6c67f9161c269f68FD74faea23AC',
+        address: '0xb6c0774Ef50FD88B16DadBcC4333B43C8F771b82',
         abi: depositCrossChainABI,
         functionName: 'deposit',
         args: [
-            `${debouncedHashCommitment}` as `0x${string}`,
+            `${hashCommitment}` as `0x${string}`,
             `${debouncedNetworkTo}`,
             `${address}`
         ],
-        value: BigInt(`${2000000000000000}`),
+        value: BigInt(`${debouncedDepositAmount}`),
     })
 
     const { data, write: writeDeposit } = useContractWrite(config);
 
     const deposit = async () => {
         setDepositing(true);
+        console.log("[deposit] depositAmount : ", depositAmount);
 
         const nullifier = BigNumber.from(ethers.randomBytes(15)).toString();
-        const value = BigNumber.from(`${depositAmount}`).toHexString();
-        console.log("nullifier : ", nullifier);
-        console.log("value : ", value);
+        console.log("[deposit] nullifier : ", nullifier);
 
         let newPoseidon = await buildPoseidon();
-        console.log("newPoseidon : ", newPoseidon);
-
-        const hashCommitment = poseidonHash(newPoseidon, [nullifier, 0]);
+        const posHash = poseidonHash(newPoseidon, [nullifier, 0]);
+        console.log("posHash = ", posHash);
         const hashNullifier = poseidonHash(newPoseidon, [nullifier, 1, leafIndex]);
-        setHashCommitment(hashCommitment);
-        console.log("hashCommitment: ", hashCommitment); // for deposit
-        tree?.insert(hashCommitment)
+        setHashCommitment(posHash);
+        console.log("[deposit] hashCommitment: ", posHash); // for deposit
+
+        tree?.insert(posHash);
+
         setGlobalNullifer(nullifier);
         setGlobalNulliferHash(hashNullifier);
-        console.log("hashNullifier: ", hashNullifier);
+        console.log("[deposit] hashNullifier after set: ", hashNullifier);
 
+        const value = BigNumber.from(`${depositAmount}`).toHexString();
         downloadTxtFile({
-            hashCommitment,
+            posHash,
             hashNullifier,
             nullifier,
             value,
         });
 
-
         writeDeposit?.();
 
-        // const responseData = await depositApiCall(hashCommitment, networkTo)
+        // const responseData = await depositApiCall(hashCommitment, networkTo);
         const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
+        // const bodyData = await response.json()
 
-        console.log("response = ", await response.blob())
-
-        const bodyData = await response.json()
-
-        console.log("bodyData: ", bodyData);
+        response.json().then(console.log)
 
         setDepositing(false);
     };
@@ -246,69 +245,134 @@ const Home: NextPage = () => {
         return solProof;
     }
 
-    //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
-    const { config: mantleConfig, error: mantleError } = usePrepareContractWrite({
-        address: '0xD6dd35Aa31fF49d1620A8a91DEe0a011045b7656',
-        abi: withdrawABI,
-        functionName: 'withdraw',
-        args: [
-            debouncedWitnessProof !== undefined ? debouncedWitnessProof : defaultAbc,
-            debouncedWitness !== undefined ? debouncedWitness.root as `0x${string}` : defaultBytes as `0x${string}`,
-            debouncedWitness !== undefined ? debouncedWitness.nullifierHash as `0x${string}` : defaultBytes as `0x${string}`,
-            debouncedWitness !== undefined ? debouncedWitness.recipient as `0x${string}` : address as `0x${string}`,
-            debouncedWitness !== undefined ? debouncedWitness.relayer as `0x${string}` : address as `0x${string}`,
-            debouncedWitness !== undefined ? BigInt(debouncedWitness.fee) : BigInt(0),
+    // //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    // const { config: mantleConfig, error: mantleError } = usePrepareContractWrite({
+    //     address: '0xD6dd35Aa31fF49d1620A8a91DEe0a011045b7656',
+    //     abi: withdrawABI,
+    //     functionName: 'withdraw',
+    //     args: [
+    //         debouncedWitnessProof !== undefined ? debouncedWitnessProof : defaultAbc,
+    //         debouncedWitness !== undefined ? debouncedWitness.root as `0x${string}` : defaultBytes as `0x${string}`,
+    //         debouncedWitness !== undefined ? debouncedWitness.nullifierHash as `0x${string}` : defaultBytes as `0x${string}`,
+    //         debouncedWitness !== undefined ? debouncedWitness.recipient as `0x${string}` : address as `0x${string}`,
+    //         debouncedWitness !== undefined ? debouncedWitness.relayer as `0x${string}` : address as `0x${string}`,
+    //         debouncedWitness !== undefined ? BigInt(debouncedWitness.fee) : BigInt(0),
+    //     ],
+    //     value: BigInt(`${2000000000000000}`),
+    // })
+
+    // const { data: mantleData, write: withdrawFromMantle } = useContractWrite(mantleConfig);
+
+    // //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    // const { config: lineaConfig, error: lineaError } = usePrepareContractWrite({
+    //     address: '0x550C6A96623a310eC1c446c27abE525d30c7f780',
+    //     abi: withdrawABI,
+    //     functionName: 'withdraw',
+    //     args: [
+    //         debouncedWitnessProof || defaultAbc,
+    //         debouncedWitness?.root as `0x${string}`,
+    //         debouncedWitness?.nullifierHash as `0x${string}`,
+    //         debouncedWitness?.recipient as `0x${string}`,
+    //         debouncedWitness?.relayer as `0x${string}`,
+    //         BigInt(debouncedWitness?.fee || 0),
+    //     ],
+    //     value: BigInt(`${2000000000000000}`),
+    // })
+
+    // const { data: lineaData, write: withdrawFromLinea } = useContractWrite(lineaConfig);
+
+    // pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    // const { config: scrollConfig, error: scrollError, refetch } = usePrepareContractWrite({
+    //     address: '0xb6c0774ef50fd88b16dadbcc4333b43c8f771b82',
+    //     abi: withdrawABI,
+    //     functionName: 'withdraw',
+    //     args: [
+    //         debouncedWitnessProof || defaultAbc,
+    //         debouncedWitness?.root as `0x${string}`,
+    //         debouncedWitness?.nullifierHash as `0x${string}`,
+    //         debouncedWitness?.recipient as `0x${string}`,
+    //         debouncedWitness?.relayer as `0x${string}`,
+    //         BigInt(debouncedWitness?.fee || 0),
+    //     ],
+    //     value: BigInt(`${debouncedDepositAmount}`),
+    // })
+
+    // const { data: scrollData, write: withdrawFromScroll } = useContractWrite(scrollConfig);
+
+    const { write: withdrawFromScroll2 } = useContractWrite({
+        address: "0xb6c0774ef50fd88b16dadbcc4333b43c8f771b82",
+        abi: [
+            {
+                inputs: [
+                    {
+                        components: [
+                            {
+                                internalType: "uint256[2]",
+                                name: "a",
+                                type: "uint256[2]",
+                            },
+                            {
+                                internalType: "uint256[2][2]",
+                                name: "b",
+                                type: "uint256[2][2]",
+                            },
+                            {
+                                internalType: "uint256[2]",
+                                name: "c",
+                                type: "uint256[2]",
+                            },
+                        ],
+                        internalType: "struct Proof",
+                        name: "_proof",
+                        type: "tuple",
+                    },
+                    {
+                        internalType: "bytes32",
+                        name: "_root",
+                        type: "bytes32",
+                    },
+                    {
+                        internalType: "bytes32",
+                        name: "_nullifierHash",
+                        type: "bytes32",
+                    },
+                    {
+                        internalType: "address",
+                        name: "_recipient",
+                        type: "address",
+                    },
+                    {
+                        internalType: "address",
+                        name: "_relayer",
+                        type: "address",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "_fee",
+                        type: "uint256",
+                    },
+                ],
+                name: "withdraw",
+                outputs: [],
+                stateMutability: "payable",
+                type: "function",
+            }
         ],
-        value: BigInt(`${2000000000000000}`),
+        functionName: "withdraw",
     })
 
-    const { data: mantleData, write: withdrawFromMantle } = useContractWrite(mantleConfig);
-
-    //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
-    const { config: lineaConfig, error: lineaError } = usePrepareContractWrite({
-        address: '0x550C6A96623a310eC1c446c27abE525d30c7f780',
-        abi: withdrawABI,
-        functionName: 'withdraw',
-        args: [
-            debouncedWitnessProof || defaultAbc,
-            debouncedWitness?.root as `0x${string}`,
-            debouncedWitness?.nullifierHash as `0x${string}`,
-            debouncedWitness?.recipient as `0x${string}`,
-            debouncedWitness?.relayer as `0x${string}`,
-            BigInt(debouncedWitness?.fee || 0),
-        ],
-        value: BigInt(`${2000000000000000}`),
-    })
-
-    const { data: lineaData, write: withdrawFromLinea } = useContractWrite(lineaConfig);
-
-    //pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
-    const { config: scrollConfig, error: scrollError } = usePrepareContractWrite({
-        address: '0x3c7E87e06C2Ef82A65731d85e005919897DF3518',
-        abi: withdrawABI,
-        functionName: 'withdraw',
-        args: [
-            debouncedWitnessProof || defaultAbc,
-            debouncedWitness?.root as `0x${string}`,
-            debouncedWitness?.nullifierHash as `0x${string}`,
-            debouncedWitness?.recipient as `0x${string}`,
-            debouncedWitness?.relayer as `0x${string}`,
-            BigInt(debouncedWitness?.fee || 0),
-        ],
-        value: BigInt(`${2000000000000000}`),
-    })
-
-    const { data: scrollData, write: withdrawFromScroll } = useContractWrite(scrollConfig);
 
     const withdraw = async () => {
         // const apiCallLeaf = leafIndexApiCall(networkTo);
         console.log("[withdraw]");
 
         const leafResponse = await fetch(`http://localhost:3001/leafindex/${networkTo}`) // leafindex
-        console.log("leafResponse = ", await leafResponse.blob());
+        // console.log("leafResponse = ", await leafResponse.blob());
 
-        const leafIndex = await leafResponse.json()
-        console.log("leafIndex = ", leafIndex);
+        console.log("leafResponse = ", leafResponse);
+        leafResponse.json().then(console.log)
+
+        // const leafIndex = await leafResponse.json()
 
         interface treeElements {
             root: string
@@ -333,23 +397,29 @@ const Home: NextPage = () => {
         // console.log("responseData for [withdraw], ", responseData);
 
         const response = await fetch(`http://localhost:3001/withdraw/${leafIndex}/${networkTo}`)
-        console.log("response = ", await response.blob());
-        const bodyData = await response.json()
-        console.log("bodyData: ", response);
+        console.log("response = ", response);
+        response.json().then(console.log)
+        // const bodyData = await response.json()
+        // console.log("bodyData: ", bodyData);
 
 
+        console.log("glogalNullifier = ", globalNullifier);
+        console.log("globalNullifierHash = ", globalNullifierHash);
         const fee = 0;
         const constructedWitness: Witness = {
             // Public
-            root: `${bodyData.root}`,
+            // root: `${bodyData.root}`,
+            root: elements.root,
             nullifierHash: globalNullifierHash,
             recipient: `${address}`,
             relayer: `${address}`,
             fee,
             // Private (user keep)
             nullifier: BigNumber.from(globalNullifier).toBigInt(),
-            pathElements: bodyData.path_elements,
-            pathIndices: bodyData.path_index,
+            // pathElements: bodyData.path_elements,
+            pathElements: elements.pathElements,
+            // pathIndices: bodyData.path_index,
+            pathIndices: elements.pathIndex,
         };
         setWitness(witness);
 
@@ -359,15 +429,27 @@ const Home: NextPage = () => {
 
         switch (networkTo) {
             case Networks.Mantle: {
-                withdrawFromMantle?.();
+                // withdrawFromMantle?.();
                 break;
             }
             case Networks.Goerly: {
-                withdrawFromLinea?.();
+                // withdrawFromLinea?.();
                 break;
             }
             case Networks.Scroll: {
-                withdrawFromScroll?.();
+                // withdrawFromScroll?.();
+                // break;
+
+                withdrawFromScroll2({
+                    args: [
+                        solProof,
+                        constructedWitness.root,
+                        constructedWitness.nullifierHash,
+                        constructedWitness.recipient,
+                        constructedWitness.relayer,
+                        constructedWitness.fee
+                    ]
+                })
                 break;
             }
             default: {
