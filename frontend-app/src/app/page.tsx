@@ -175,11 +175,11 @@ const Home: NextPage = () => {
             reader.readAsText(file);
         }
     };
-
+    const axelarGasPrice = 10000000000000000;
     // pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
     const { config, error, isError } = usePrepareContractWrite({
         // address: '0xA78ADcae31FE6c67f9161c269f68FD74faea23AC',
-        address: '0xb6c0774Ef50FD88B16DadBcC4333B43C8F771b82',
+        address: '0x361A5f28947F6a4726bBE6e2555a37BB6b5B538d',
         abi: depositCrossChainABI,
         functionName: 'deposit',
         args: [
@@ -187,7 +187,7 @@ const Home: NextPage = () => {
             `${debouncedNetworkTo}`,
             `${address}`
         ],
-        value: BigInt(`${debouncedDepositAmount}`),
+        value: BigInt(`${debouncedDepositAmount}`)+BigInt(`${axelarGasPrice}`),
     })
 
     const { data, write: writeDeposit } = useContractWrite(config);
