@@ -7,9 +7,9 @@
 Our Team members:  
   [Vincent](https://github.com/KunPengRen) - Twitter (@darmonren), Email (dcsrenk@nus.edu.sg)
 
-  [Kenneth](https://github.com/DarkArtistry) - Twitter (@KernelKennethG), Email (zhenhao.goh@comp.nus.edu.sg)
-
   [Ramon](https://github.com/reymom) - Email (ramon_gs95@hotmail.com)
+  
+  [Bob](https://github.com/wubozhi)
 
 
 
@@ -57,5 +57,6 @@ cd backend && yarn install && yarn run dev
 **Congratulations to our team for clinching the 1st Prize for both Axelar Track #1 and Mantle Track #4 in the Ethereum Singapore 2023 Hackathon, Thanks to all the team members and sponsors. (Only one team won two first prizes)**  
 
 ## Post contributors
-[Mohak](https://github.com/mnm458) - Twitter (@spartablock), Email (mohaknainmalhotra@gmail.com)
-[Arindam](https://github.com/Arindam2407) - Email (as3316@cam.ac.uk)
+[Mohak](https://github.com/mnm458) - Twitter (@spartablock), Email (mohaknainmalhotra@gmail.com) 
+[Arindam](https://github.com/Arindam2407) - Email (as3316@cam.ac.uk) 
+[Kenneth](https://github.com/DarkArtistry) - Twitter (@KernelKennethG), Email (zhenhao.goh@comp.nus.edu.sg)
