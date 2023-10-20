@@ -2,14 +2,12 @@
 
 ## Kaviar: Cross-Chain Compliant Currency-Mixer
 
-
-
 Our Team members:  
   [Vincent](https://github.com/KunPengRen) - Twitter (@darmonren), Email (dcsrenk@nus.edu.sg)
 
   [Ramon](https://github.com/reymom) - Email (ramon_gs95@hotmail.com)
   
-  [Bob](https://github.com/wubozhi)
+  [Bob](https://github.com/wubozhi)  - Email (bozhi001@e.ntu.edu.sg)
 
 
 
@@ -29,6 +27,13 @@ nullifierHash = PoseidonHash(nullifier, 1, leafIndex)
 - Use [Axelar](https://github.com/axelarnetwork/axelar-core) to transfer commitment data between two chains.
 
 - The living demo is at [here](), we now support privacy transfer assets from Polygon zkEVM to scroll testnet.
+
+## For ETH Hong Kong Hackathon
+During this Hackathon, we improve our platform to support the Scroll and Polygon zkEVM. <br>
+Test case transaction below:  <br>
+Cross-chain sender at Polygon zkEVM: https://testnet-zkevm.polygonscan.com/tx/0xfbf70bb619940bb0faf4a7080c2beb4d5efd0f2da5b7a3c5b80d47925525e172 <br>
+Axelar Scan for cross-chain data transfer: https://testnet.axelarscan.io/gmp/0xfbf70bb619940bb0faf4a7080c2beb4d5efd0f2da5b7a3c5b80d47925525e172 <br>
+Cross-chain receiver at Scroll: 
 
 ## Workflow
 [![Kaviar](./video/workflow.png)]()
