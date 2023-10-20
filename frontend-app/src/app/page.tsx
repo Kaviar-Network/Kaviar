@@ -1,5 +1,6 @@
 'use client';
 
+
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { NextPage } from "next";
@@ -75,7 +76,7 @@ const Home: NextPage = () => {
     const [depositAmount, setDepositAmount] = useState<BigInt>(BigInt(1000000000000000));
     const [withdrawAmount, setWithdrawAmount] = useState<BigInt>();
     const [privateNote, setPrivateNote] = useState<string>();
-    const [hashCommitment, setHashCommitment] = useState<string>("0x" + "0".repeat(64));
+    const [hashCommitment, setHashCommitment] = useState<string>();
     const [globalNullifier, setGlobalNullifer] = useState<string>();
     const [globalNullifierHash, setGlobalNulliferHash] = useState<string>();
     const [leafIndex, setLeafIndex] = useState(0); // mantle: 0, linea: 0
@@ -83,7 +84,7 @@ const Home: NextPage = () => {
     const [witness, setWitness] = useState<Witness>();
 
     const debouncedNetworkTo = useDebounce(networkTo);
-    // const debouncedHashCommitment = useDebounce(hashCommitment);
+    const debouncedHashCommitment = useDebounce(hashCommitment);
     const debouncedWitnessProof = useDebounce(witnessProof);
     const debouncedWitness = useDebounce(witness);
     const debouncedDepositAmount = useDebounce(depositAmount);
@@ -176,21 +177,51 @@ const Home: NextPage = () => {
         }
     };
 
-    // pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
-    const { config, error, isError } = usePrepareContractWrite({
-        // address: '0xA78ADcae31FE6c67f9161c269f68FD74faea23AC',
-        address: '0xb6c0774Ef50FD88B16DadBcC4333B43C8F771b82',
-        abi: depositCrossChainABI,
-        functionName: 'deposit',
-        args: [
-            `${hashCommitment}` as `0x${string}`,
-            `${debouncedNetworkTo}`,
-            `${address}`
-        ],
-        value: BigInt(`${debouncedDepositAmount}`),
-    })
+    // // pair useContractWrite with the usePrepareContractWrite hook to avoid UX pitfalls
+    // const { config, error, isError } = usePrepareContractWrite({
+    //     // address: '0xA78ADcae31FE6c67f9161c269f68FD74faea23AC',
+    //     address: '0xb6c0774Ef50FD88B16DadBcC4333B43C8F771b82',
+    //     abi: depositCrossChainABI,
+    //     functionName: 'deposit',
+    //     args: [
+    //         `${debouncedHashCommitment}` as `0x${string}`,
+    //         `${debouncedNetworkTo}`,
+    //         `${address}`
+    //     ],
+    //     value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
+    // })
 
-    const { data, write: writeDeposit } = useContractWrite(config);
+    // const { data, write: writeDeposit } = useContractWrite(config);
+
+    const { write } = useContractWrite({
+        address: "0x361A5f28947F6a4726bBE6e2555a37BB6b5B538d",
+        abi: [
+            {
+                inputs: [
+                    {
+                        internalType: "bytes32",
+                        name: "_commitment",
+                        type: "bytes32",
+                    },
+                    {
+                        internalType: "string",
+                        name: "destinationChain",
+                        type: "string",
+                    },
+                    {
+                        internalType: "string",
+                        name: "destinationAddress",
+                        type: "string",
+                    },
+                ],
+                name: "deposit",
+                outputs: [],
+                stateMutability: "payable",
+                type: "function",
+            },
+        ],
+        functionName: "deposit",
+    });
 
     const deposit = async () => {
         setDepositing(true);
@@ -220,7 +251,17 @@ const Home: NextPage = () => {
             value,
         });
 
-        writeDeposit?.();
+        // var total = depositAmount + BigNumber.from(200000000000000n)
+        // writeDeposit?.();
+        write?.({
+            args: [
+                `${posHash}`,
+                "scroll",
+                address,
+            ],
+            // value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
+            value: BigInt(`${11000000000000000n}`),
+        })
 
         // const responseData = await depositApiCall(hashCommitment, networkTo);
         const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
@@ -300,7 +341,7 @@ const Home: NextPage = () => {
     // const { data: scrollData, write: withdrawFromScroll } = useContractWrite(scrollConfig);
 
     const { write: withdrawFromScroll2 } = useContractWrite({
-        address: "0xb6c0774ef50fd88b16dadbcc4333b43c8f771b82",
+        address: "0xb6c0774Ef50FD88B16DadBcC4333B43C8F771b82",
         abi: [
             {
                 inputs: [
@@ -366,13 +407,14 @@ const Home: NextPage = () => {
         // const apiCallLeaf = leafIndexApiCall(networkTo);
         console.log("[withdraw]");
 
+        let leafIndex: number = 69;
         const leafResponse = await fetch(`http://localhost:3001/leafindex/${networkTo}`) // leafindex
-        // console.log("leafResponse = ", await leafResponse.blob());
+        await leafResponse.json().then(res => {
+            console.log("leafResponse res = ", leafResponse);
+            leafIndex = res;
+        });
 
-        console.log("leafResponse = ", leafResponse);
-        leafResponse.json().then(console.log)
-
-        // const leafIndex = await leafResponse.json()
+        console.log("[[[]]] leafIndex = ", leafIndex);
 
         interface treeElements {
             root: string
@@ -389,27 +431,30 @@ const Home: NextPage = () => {
             return
         }
 
-        console.log("root : ", elements.root);
-        console.log("pathElements : ", elements.pathElements);
-        console.log("pathIndex : ", elements.pathIndex);
+        console.log("elements.root : ", elements.root);
+        console.log("elements.pathElements : ", elements.pathElements);
+        console.log("elements.pathIndex : ", elements.pathIndex);
 
         // const responseData = withdrawApiCall(leafIndex, networkTo);
-        // console.log("responseData for [withdraw], ", responseData);
 
         const response = await fetch(`http://localhost:3001/withdraw/${leafIndex}/${networkTo}`)
+        let data: any;
         console.log("response = ", response);
-        response.json().then(console.log)
-        // const bodyData = await response.json()
-        // console.log("bodyData: ", bodyData);
+        await response.json().then(((res) => {
+            data = res
+        }));
+        console.log("data.root : ", data.root);
+        console.log("data.pathElements : ", data.path_elements);
+        console.log("data.pathIndex : ", data.path_index);
 
 
-        console.log("glogalNullifier = ", globalNullifier);
+        console.log("globalNullifier = ", globalNullifier);
         console.log("globalNullifierHash = ", globalNullifierHash);
         const fee = 0;
         const constructedWitness: Witness = {
             // Public
             // root: `${bodyData.root}`,
-            root: elements.root,
+            root: `${elements.root}`,
             nullifierHash: globalNullifierHash,
             recipient: `${address}`,
             relayer: `${address}`,
@@ -440,7 +485,7 @@ const Home: NextPage = () => {
                 // withdrawFromScroll?.();
                 // break;
 
-                withdrawFromScroll2({
+                withdrawFromScroll2?.({
                     args: [
                         solProof,
                         constructedWitness.root,
