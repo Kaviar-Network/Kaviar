@@ -5,6 +5,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 import { Providers } from './providers'
 import styles from './page.module.css'
 import { NavbarMain } from "@/components/Navbar"
+import bg from '../../public/bg-sea.jpg'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,7 +19,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
-                    <main className={styles.main}>
+                    <main className={styles.main} style={{
+                        backgroundImage: `url(${bg.src})`,
+                        opacity: 0.9,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
+                    }}>
                         <NavbarMain />
                         <div className={styles.content}>
                             {children}
