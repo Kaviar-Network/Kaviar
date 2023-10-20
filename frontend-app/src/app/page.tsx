@@ -62,6 +62,7 @@ enum Networks {
     Ethereum = "ethereum",
     Mantle = "mantle",
     Polygon = "polygon",
+    PolygonZkEVM = "polygonZkEVM",
     Goerly = "goerly",
     Scroll = "scroll",
     Binance = "bsc"
@@ -223,6 +224,36 @@ const Home: NextPage = () => {
         functionName: "deposit",
     });
 
+    const { write: depositZkEVM } = useContractWrite({
+        address: "0x602475C17C020FE3AF7294eC4aCF68f93198332c",
+        abi: [
+            {
+                inputs: [
+                    {
+                        internalType: "bytes32",
+                        name: "_commitment",
+                        type: "bytes32",
+                    },
+                    {
+                        internalType: "string",
+                        name: "destinationChain",
+                        type: "string",
+                    },
+                    {
+                        internalType: "string",
+                        name: "destinationAddress",
+                        type: "string",
+                    },
+                ],
+                name: "deposit",
+                outputs: [],
+                stateMutability: "payable",
+                type: "function",
+            },
+        ],
+        functionName: "deposit",
+    });
+
     const deposit = async () => {
         setDepositing(true);
         console.log("[deposit] depositAmount : ", depositAmount);
@@ -253,15 +284,36 @@ const Home: NextPage = () => {
 
         // var total = depositAmount + BigNumber.from(200000000000000n)
         // writeDeposit?.();
-        write?.({
-            args: [
-                `${posHash}`,
-                "scroll",
-                address,
-            ],
-            // value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
-            value: BigInt(`${11000000000000000n}`),
-        })
+
+        console.log("networkFrom = ", networkFrom);
+        switch (networkFrom) {
+            case Networks.Binance: {
+                console.log("Binance");
+                write?.({
+                    args: [
+                        `${posHash}`,
+                        "scroll",
+                        address,
+                    ],
+                    // value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
+                    value: BigInt(`${11000000000000000n}`),
+                })
+                break;
+            }
+            case Networks.PolygonZkEVM: {
+                console.log("PolygonZkEVM");
+                depositZkEVM?.({
+                    args: [
+                        `${posHash}`,
+                        "scroll",
+                        address,
+                    ],
+                    // value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
+                    value: BigInt(`${11000000000000000n}`),
+                })
+                break;
+            }
+        }
 
         // const responseData = await depositApiCall(hashCommitment, networkTo);
         const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
@@ -576,6 +628,7 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
                                                         <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.PolygonZkEVM}>Polygon ZkEVM Network</MenuItem>
                                                         <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
                                                         <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
@@ -602,6 +655,7 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
                                                         <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.PolygonZkEVM}>Polygon ZkEVM Network</MenuItem>
                                                         <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
                                                         <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
@@ -679,6 +733,7 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
                                                         <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.PolygonZkEVM}>Polygon ZkEVM Network</MenuItem>
                                                         <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
                                                         <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
@@ -704,6 +759,7 @@ const Home: NextPage = () => {
                                                         <MenuItem value={Networks.Mantle}>Mantle Network</MenuItem>
                                                         <MenuItem value={Networks.Goerly}>Linea Network</MenuItem>
                                                         <MenuItem value={Networks.Polygon}>Polygon Network</MenuItem>
+                                                        <MenuItem value={Networks.PolygonZkEVM}>Polygon ZkEVM Network</MenuItem>
                                                         <MenuItem value={Networks.Scroll}>Scroll Network</MenuItem>
                                                         <MenuItem value={Networks.Binance}>Binance Network</MenuItem>
                                                     </StyledSelect>
