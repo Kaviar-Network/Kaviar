@@ -28,7 +28,7 @@ nullifierHash = PoseidonHash(nullifier, 1, leafIndex)
 
 - Use [Axelar](https://github.com/axelarnetwork/axelar-core) to transfer commitment data between two chains.
 
-- The living demo is at [here](), we now support privacy transfer assets from polygon to scroll testnet.
+- The living demo is at [here](), we now support privacy transfer assets from Polygon zkEVM to scroll testnet.
 
 ## Workflow
 [![Kaviar](./video/workflow.png)]()
