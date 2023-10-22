@@ -1,6 +1,5 @@
 'use client';
 
-
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { NextPage } from "next";
@@ -30,7 +29,7 @@ import {
     useNetwork,
     useSwitchNetwork,
     useContractWrite,
-    usePrepareContractWrite
+    // usePrepareContractWrite
 } from "wagmi";
 import { buildPoseidon } from "circomlibjs";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -41,6 +40,7 @@ import {
     depositCrossChainABI,
     withdrawABI,
 } from "@/utils/abis";
+import { depositContractBnbAddress, depositContractPolygonZkAddress, withdrawContractScrollAddress } from "@/utils/addresses";
 import { log } from "@/utils/logger";
 // import {
 //     deposit as depositApiCall,
@@ -74,8 +74,8 @@ const Home: NextPage = () => {
     const [networkFrom, setNetworkFrom] = useState<Networks>(Networks.Binance);
     const [networkTo, setNetworkTo] = useState<Networks>(Networks.Scroll);
     const [depositing, setDepositing] = useState(false);
-    const [depositAmount, setDepositAmount] = useState<BigInt>(BigInt(1000000000000000));
-    const [withdrawAmount, setWithdrawAmount] = useState<BigInt>();
+    const [depositAmount, setDepositAmount] = useState<BigInt>(BigInt("10000000000000000"));
+    const [withdrawAmount, setWithdrawAmount] = useState<BigInt>(BigInt("10000000000000000"));
     const [privateNote, setPrivateNote] = useState<string>();
     const [hashCommitment, setHashCommitment] = useState<string>();
     const [globalNullifier, setGlobalNullifer] = useState<string>();
@@ -84,21 +84,21 @@ const Home: NextPage = () => {
     const [witnessProof, setWitnessProof] = useState<{ a: any[2]; b: any[2][2]; c: any[2]; }>();
     const [witness, setWitness] = useState<Witness>();
 
-    const debouncedNetworkTo = useDebounce(networkTo);
-    const debouncedHashCommitment = useDebounce(hashCommitment);
-    const debouncedWitnessProof = useDebounce(witnessProof);
-    const debouncedWitness = useDebounce(witness);
-    const debouncedDepositAmount = useDebounce(depositAmount);
+    // const debouncedNetworkTo = useDebounce(networkTo);
+    // const debouncedHashCommitment = useDebounce(hashCommitment);
+    // const debouncedWitnessProof = useDebounce(witnessProof);
+    // const debouncedWitness = useDebounce(witness);
+    // const debouncedDepositAmount = useDebounce(depositAmount);
 
-    const defaultAbc: { a: number[]; b: number[][]; c: number[]; } = {
-        a: [0, 0], b: [[0, 0], [0, 0]], c: [0, 0]
-    }
-    const defaultBytes = "0".repeat(32);
+    // const defaultAbc: { a: number[]; b: number[][]; c: number[]; } = {
+    //     a: [0, 0], b: [[0, 0], [0, 0]], c: [0, 0]
+    // }
+    // const defaultBytes = "0".repeat(32);
 
     // wagmi
     const { address } = useAccount();
-    const { chain } = useNetwork();
-    const { switchNetwork } = useSwitchNetwork();
+    // const { chain } = useNetwork();
+    // const { switchNetwork } = useSwitchNetwork();
 
     interface Witness {
         // Public
@@ -194,8 +194,8 @@ const Home: NextPage = () => {
 
     // const { data, write: writeDeposit } = useContractWrite(config);
 
-    const { write } = useContractWrite({
-        address: "0x361A5f28947F6a4726bBE6e2555a37BB6b5B538d",
+    const { write: depositBnb } = useContractWrite({
+        address: depositContractBnbAddress,
         abi: [
             {
                 inputs: [
@@ -221,11 +221,11 @@ const Home: NextPage = () => {
                 type: "function",
             },
         ],
-        functionName: "deposit",
+        functionName: "deposit"
     });
 
     const { write: depositZkEVM } = useContractWrite({
-        address: "0x602475C17C020FE3AF7294eC4aCF68f93198332c",
+        address: depositContractPolygonZkAddress,
         abi: [
             {
                 inputs: [
@@ -256,23 +256,25 @@ const Home: NextPage = () => {
 
     const deposit = async () => {
         setDepositing(true);
-        console.log("[deposit] depositAmount : ", depositAmount);
 
         const nullifier = BigNumber.from(ethers.randomBytes(15)).toString();
-        console.log("[deposit] nullifier : ", nullifier);
+        setGlobalNullifer(nullifier);
+        console.log("[deposit] globalNullifier : ", nullifier);
 
         let newPoseidon = await buildPoseidon();
+
         const posHash = poseidonHash(newPoseidon, [nullifier, 0]);
-        console.log("posHash = ", posHash);
-        const hashNullifier = poseidonHash(newPoseidon, [nullifier, 1, leafIndex]);
         setHashCommitment(posHash);
         console.log("[deposit] hashCommitment: ", posHash); // for deposit
 
-        tree?.insert(posHash);
+        const hashNullifier = poseidonHash(newPoseidon, [nullifier, 1, leafIndex]);
 
-        setGlobalNullifer(nullifier);
+        console.log("tree before inser = ", tree);
+        await tree?.insert(posHash);
+        console.log("tree after insert = ", tree);
+
         setGlobalNulliferHash(hashNullifier);
-        console.log("[deposit] hashNullifier after set: ", hashNullifier);
+        console.log("[deposit] globalNullifierHash after set: ", hashNullifier);
 
         const value = BigNumber.from(`${depositAmount}`).toHexString();
         downloadTxtFile({
@@ -285,31 +287,28 @@ const Home: NextPage = () => {
         // var total = depositAmount + BigNumber.from(200000000000000n)
         // writeDeposit?.();
 
-        console.log("networkFrom = ", networkFrom);
         switch (networkFrom) {
             case Networks.Binance: {
-                console.log("Binance");
-                write?.({
+                console.log("[depositBnb]");
+                depositBnb?.({
                     args: [
                         `${posHash}`,
-                        "scroll",
+                        networkTo,
                         address,
                     ],
-                    // value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
-                    value: BigInt(`${11000000000000000n}`),
+                    value: BigInt(`${depositAmount}`) + BigInt("1000000000000000"),
                 })
                 break;
             }
             case Networks.PolygonZkEVM: {
-                console.log("PolygonZkEVM");
+                console.log("depositZkEVM");
                 depositZkEVM?.({
                     args: [
                         `${posHash}`,
-                        "scroll",
+                        networkTo,
                         address,
                     ],
-                    // value: BigInt(`${debouncedDepositAmount}` + BigInt(100000000000000)),
-                    value: BigInt(`${11000000000000000n}`),
+                    value: BigInt("2000000000000000"),
                 })
                 break;
             }
@@ -393,7 +392,7 @@ const Home: NextPage = () => {
     // const { data: scrollData, write: withdrawFromScroll } = useContractWrite(scrollConfig);
 
     const { write: withdrawFromScroll2 } = useContractWrite({
-        address: "0xb6c0774Ef50FD88B16DadBcC4333B43C8F771b82",
+        address: withdrawContractScrollAddress,
         abi: [
             {
                 inputs: [
@@ -459,7 +458,7 @@ const Home: NextPage = () => {
         // const apiCallLeaf = leafIndexApiCall(networkTo);
         console.log("[withdraw]");
 
-        let leafIndex: number = 69;
+        let leafIndex: number = 0;
         const leafResponse = await fetch(`http://localhost:3001/leafindex/${networkTo}`) // leafindex
         await leafResponse.json().then(res => {
             console.log("leafResponse res = ", leafResponse);
@@ -468,36 +467,30 @@ const Home: NextPage = () => {
 
         console.log("[[[]]] leafIndex = ", leafIndex);
 
-        interface treeElements {
-            root: string
-            pathElements: string[]
-            pathIndex: number[]
-        };
-        let elements: treeElements;
-        if (tree !== undefined) {
-            elements = await tree.path(
-                leafIndex
-            );
-        } else {
-            log.error("merkle tree is undefined")
-            return
+        if (tree === undefined) {
+            console.error("tree is undefined");
         }
+        leafIndex = 0; //calls to backend give wrong results
+        const { root, pathElements, pathIndex } = await tree!.path(
+            leafIndex
+        );
 
-        console.log("elements.root : ", elements.root);
-        console.log("elements.pathElements : ", elements.pathElements);
-        console.log("elements.pathIndex : ", elements.pathIndex);
+        console.log("root : ", root);
+        console.log("pathElements : ", pathElements);
+        console.log("pathIndex : ", pathIndex);
 
         // const responseData = withdrawApiCall(leafIndex, networkTo);
 
-        const response = await fetch(`http://localhost:3001/withdraw/${leafIndex}/${networkTo}`)
-        let data: any;
-        console.log("response = ", response);
-        await response.json().then(((res) => {
-            data = res
-        }));
-        console.log("data.root : ", data.root);
-        console.log("data.pathElements : ", data.path_elements);
-        console.log("data.pathIndex : ", data.path_index);
+        // this calls to backend are broken
+        // const response = await fetch(`http://localhost:3001/withdraw/${leafIndex}/${networkTo}`)
+        // let data: any;
+        // console.log("response = ", response);
+        // await response.json().then(((res) => {
+        //     data = res
+        // }));
+        // console.log("data.root : ", data.root);
+        // console.log("data.pathElements : ", data.path_elements);
+        // console.log("data.pathIndex : ", data.path_index);
 
 
         console.log("globalNullifier = ", globalNullifier);
@@ -506,7 +499,7 @@ const Home: NextPage = () => {
         const constructedWitness: Witness = {
             // Public
             // root: `${bodyData.root}`,
-            root: `${elements.root}`,
+            root,
             nullifierHash: globalNullifierHash,
             recipient: `${address}`,
             relayer: `${address}`,
@@ -514,14 +507,14 @@ const Home: NextPage = () => {
             // Private (user keep)
             nullifier: BigNumber.from(globalNullifier).toBigInt(),
             // pathElements: bodyData.path_elements,
-            pathElements: elements.pathElements,
+            pathElements: pathElements,
             // pathIndices: bodyData.path_index,
-            pathIndices: elements.pathIndex,
+            pathIndices: pathIndex,
         };
         setWitness(witness);
 
         const solProof = await prove(constructedWitness);
-        console.log("solProof : ", solProof);
+        console.log("solProof = ", solProof);
         setWitnessProof(solProof);
 
         switch (networkTo) {
@@ -536,6 +529,9 @@ const Home: NextPage = () => {
             case Networks.Scroll: {
                 // withdrawFromScroll?.();
                 // break;
+                console.log("root = ", root);
+                console.log("globalNullifierHash = ", globalNullifierHash);
+                console.log("recipient and relayer = ", address);
 
                 withdrawFromScroll2?.({
                     args: [
@@ -679,8 +675,8 @@ const Home: NextPage = () => {
                                                             console.log("depositing amount = ", e.target.value)
                                                             setDepositAmount(e.target.value as BigInt);
                                                         }}>
-                                                        <MenuItem value={1000000000000000}>
-                                                            0.001 Ether
+                                                        <MenuItem value={10000000000000000}>
+                                                            0.01 Ether
                                                         </MenuItem>
                                                         <MenuItem value={100000000000000000}>
                                                             0.1 Ether
@@ -782,8 +778,8 @@ const Home: NextPage = () => {
                                                         onChange={(e: any) => {
                                                             setWithdrawAmount(e.target.value);
                                                         }}>
-                                                        <MenuItem value={1000000000000000}>
-                                                            0.001 Ether
+                                                        <MenuItem value={10000000000000000}>
+                                                            0.01 Ether
                                                         </MenuItem>
                                                         <MenuItem value={100000000000000000}>
                                                             0.1 Ether
