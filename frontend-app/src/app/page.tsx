@@ -294,9 +294,10 @@ const Home: NextPage = () => {
                     args: [
                         `${posHash}`,
                         networkTo,
-                        address,
+                        // scroll withdraw contract address
+                        "0x70923C0e0b8521F6879224FB1682E88c04daE35c",
                     ],
-                    value: BigInt(`${depositAmount}`) + BigInt("1000000000000000"),
+                    value: BigInt(`${depositAmount}`) + BigInt("10000000000000000"),
                 })
                 break;
             }
@@ -315,10 +316,10 @@ const Home: NextPage = () => {
         }
 
         // const responseData = await depositApiCall(hashCommitment, networkTo);
-        const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
+       // const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
         // const bodyData = await response.json()
 
-        response.json().then(console.log)
+       // response.json().then(console.log)
 
         setDepositing(false);
     };
@@ -566,7 +567,7 @@ const Home: NextPage = () => {
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography variant="body1" gutterBottom>
-                                    Kaviar allos cross-chain private transactions.
+                                    Kaviar allows cross-chain private transactions.
                                 </Typography>
                             </AccordionDetails>
                         </CustomAccordion>
@@ -675,8 +676,8 @@ const Home: NextPage = () => {
                                                             console.log("depositing amount = ", e.target.value)
                                                             setDepositAmount(e.target.value as BigInt);
                                                         }}>
-                                                        <MenuItem value={10000000000000000}>
-                                                            0.01 Ether
+                                                        <MenuItem value={1000000000000000}>
+                                                            0.001 Ether
                                                         </MenuItem>
                                                         <MenuItem value={100000000000000000}>
                                                             0.1 Ether
@@ -778,8 +779,8 @@ const Home: NextPage = () => {
                                                         onChange={(e: any) => {
                                                             setWithdrawAmount(e.target.value);
                                                         }}>
-                                                        <MenuItem value={10000000000000000}>
-                                                            0.01 Ether
+                                                        <MenuItem value={1000000000000000}>
+                                                            0.001 Ether
                                                         </MenuItem>
                                                         <MenuItem value={100000000000000000}>
                                                             0.1 Ether

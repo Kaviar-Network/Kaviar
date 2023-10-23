@@ -15,9 +15,6 @@ async function main() {
     const balanceBN = await signer.getBalance();
     const balance = Number(ethers.utils.formatEther(balanceBN));
     console.log(`Wallet balance ${balance}`);
-
-  
-
    
     const ETH_AMOUNT = ethers.utils.parseEther("0.001");
     const HEIGHT = 20;

@@ -41,14 +41,14 @@ async function main(){
     // the old root
     // copy the output of sender.ts
     const nullifier = new Uint8Array([
-        36, 122,  94, 210, 155,
-       215, 120, 154,  68, 223,
-        87, 221, 170,  61,  77
-     ])
+        245,  66, 223, 148,  53,
+        111,  36,  40, 254, 172,
+        199, 165,  49, 154, 149
+      ])
    // const nullifierHash = "0x1a47daa6190b647882c9f9a3ca67d761406a67d7be50adfb15aa0cca4d2fd18e"
     const leafIndex = 0
     const nullifierHash = poseidonHash(poseidon, [nullifier, 1, leafIndex])
-    const commitment = "0x1dc9bbb3194eddda4e23238467e0d47f9599851aef5446935619caf6c9984b3d"
+    const commitment = "0x2501c5ec3e01047338b5fc27f023318750bb7bcf8a4a2976022945abb47721e6"
     console.log(tree);
     
     //console.log(await tree.root(), await tornadoContract.roots(0));
