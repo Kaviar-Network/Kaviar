@@ -294,10 +294,9 @@ const Home: NextPage = () => {
                     args: [
                         `${posHash}`,
                         networkTo,
-                        // scroll withdraw contract address
-                        "0x70923C0e0b8521F6879224FB1682E88c04daE35c",
+                        withdrawContractScrollAddress // withdraw contract address
                     ],
-                    value: BigInt(`${depositAmount}`) + BigInt("10000000000000000"),
+                    value: BigInt("1000000000000000") + BigInt("10000000000000000"),
                 })
                 break;
             }
@@ -307,7 +306,7 @@ const Home: NextPage = () => {
                     args: [
                         `${posHash}`,
                         networkTo,
-                        address,
+                        withdrawContractScrollAddress,
                     ],
                     value: BigInt("2000000000000000"),
                 })
@@ -316,10 +315,10 @@ const Home: NextPage = () => {
         }
 
         // const responseData = await depositApiCall(hashCommitment, networkTo);
-       // const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
+        // const response = await fetch(`http://localhost:3001/deposit/${hashCommitment}/${networkTo}`)
         // const bodyData = await response.json()
 
-       // response.json().then(console.log)
+        // response.json().then(console.log)
 
         setDepositing(false);
     };
@@ -556,18 +555,20 @@ const Home: NextPage = () => {
     return (
         <Slide direction="up" in={true} mountOnEnter unmountOnExit>
             <div className={styles.homepage}>
-                <Grid container spacing={0} direction="column" alignItems="center">
-                    <Grid item>
-                        <CustomAccordion className={styles.accordian}>
+                <Grid container direction="column" alignItems="center">
+                    <Grid item alignItems="center" className={styles.accordion} >
+                        <CustomAccordion defaultExpanded={true} style={{ marginBottom: "30px" }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header">
-                                <Typography>Introduction</Typography>
+                                aria-controls="panel1a-content">
+                                <Typography variant="h5">About Kaviar</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography variant="body1" gutterBottom>
-                                    Kaviar allows cross-chain private transactions.
+                                <Typography variant="body1" gutterBottom textAlign={"center"}>
+                                    Kaviar is a bridge-agnostic cross-chain platform for secure and
+                                    anonymous transfers using ZKPs.
+                                    It acts as a compliant mixer, enhanced by a privacy pool
+                                    with allowlists and blacklists for proof of innocence.
                                 </Typography>
                             </AccordionDetails>
                         </CustomAccordion>
@@ -577,7 +578,7 @@ const Home: NextPage = () => {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                height: "70vh",
+                                // height: "70vh",
                             }}>
                             <div style={{ maxWidth: "500px", minWidth: "500px" }}>
                                 <Grid container spacing={3}>
@@ -676,19 +677,22 @@ const Home: NextPage = () => {
                                                             console.log("depositing amount = ", e.target.value)
                                                             setDepositAmount(e.target.value as BigInt);
                                                         }}>
-                                                        <MenuItem value={1000000000000000}>
+                                                        <MenuItem value={"1000000000000000"}>
                                                             0.001 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={100000000000000000}>
+                                                        <MenuItem value={"10000000000000000"}>
+                                                            0.01 Ether
+                                                        </MenuItem>
+                                                        <MenuItem value={"100000000000000000"}>
                                                             0.1 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={1000000000000000000}>
+                                                        <MenuItem value={"1000000000000000000"}>
                                                             1 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={10000000000000000000}>
+                                                        <MenuItem value={"10000000000000000000"}>
                                                             10 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={32000000000000000000}>
+                                                        <MenuItem value={"32000000000000000000"}>
                                                             32 Ether
                                                         </MenuItem>
                                                     </StyledSelect>
@@ -777,21 +781,24 @@ const Home: NextPage = () => {
                                                         defaultValue={""}
                                                         label="Amount"
                                                         onChange={(e: any) => {
-                                                            setWithdrawAmount(e.target.value);
+                                                            setWithdrawAmount(e.target.value as BigInt);
                                                         }}>
-                                                        <MenuItem value={1000000000000000}>
+                                                        <MenuItem value={"1000000000000000"}>
                                                             0.001 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={100000000000000000}>
+                                                        <MenuItem value={"10000000000000000"}>
+                                                            0.01 Ether
+                                                        </MenuItem>
+                                                        <MenuItem value={"100000000000000000"}>
                                                             0.1 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={1000000000000000000}>
+                                                        <MenuItem value={"1000000000000000000"}>
                                                             1 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={10000000000000000000}>
+                                                        <MenuItem value={"10000000000000000000"}>
                                                             10 Ether
                                                         </MenuItem>
-                                                        <MenuItem value={32000000000000000000}>
+                                                        <MenuItem value={"32000000000000000000"}>
                                                             32 Ether
                                                         </MenuItem>
                                                     </StyledSelect>

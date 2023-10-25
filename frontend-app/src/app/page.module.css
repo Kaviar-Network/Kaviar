@@ -24,6 +24,11 @@
   align-items: center;
 }
 
+.accordion {
+  width: 50%;
+  margin: auto;
+}
+
 /* non-used */
 .description {
   display: inherit;
