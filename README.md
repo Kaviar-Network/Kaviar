@@ -33,7 +33,7 @@ During this Hackathon, we improve our platform to support the Scroll and Polygon
 Test case transaction below:  <br>
 Cross-chain sender at Polygon zkEVM: https://testnet-zkevm.polygonscan.com/tx/0xfbf70bb619940bb0faf4a7080c2beb4d5efd0f2da5b7a3c5b80d47925525e172 <br>
 Axelar Scan for cross-chain data transfer: https://testnet.axelarscan.io/gmp/0xfbf70bb619940bb0faf4a7080c2beb4d5efd0f2da5b7a3c5b80d47925525e172 <br>
-Cross-chain receiver at Scroll: https://sepolia.scrollscan.com/tx/0x4ff03782a2de4875e78d9ee6ce7057c9e50d670ed6daec678e6d1d1f67ab903a
+Cross-chain receiver at Scroll: https://sepolia.scrollscan.com/tx/0x792ef14703c9d7405ee44df142f85585a6a9adee27fdc8b710d121ecb245b961
 
 ## Workflow
 [![Kaviar](./video/workflow.png)]()
